@@ -1,0 +1,20 @@
+{
+  "name": "swdc-tracker",
+  "version": "1.0.0",
+  "description": "Send to snowplow",
+  "main": "dist",
+  "types": "dist/index.d.js",
+  "author": "Bo Jacobson <bo@software.com>",
+  "prepublish": "tsc",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "@types/node": "^14.0.13",
+    "axios": "^0.19.2",
+    "snowplow-tracker": "^0.3.0"
+  }
+}
