@@ -1,9 +1,9 @@
 export function filePayload(
-  name?: string, 
-  path?: string, 
-  syntax?: string,
-  line_count?: number,
-  character_count?: number
+  name: string, 
+  path: string, 
+  syntax: string,
+  line_count: number,
+  character_count: number
 ) {
   return {
     schema: "iglu:com.software/file/jsonschema/1-0-0",
@@ -18,8 +18,8 @@ export function filePayload(
 }
 
 export function projectPayload(
-  name?: string,
-  directory?: string
+  name: string,
+  directory: string
 ) {
   return {
     schema: "iglu:com.software/project/jsonschema/1-0-0",
@@ -30,21 +30,40 @@ export function projectPayload(
   }
 }
 
-export function userPayload(id: number) {
-  return {
-    schema: "iglu:com.software/user/jsonschema/1-0-2",
-    data: {
-      id: id
-    }
-  }
-}
-
 export function pluginPayload(id?: number, version?: string) {
   return {
     schema: "iglu:com.software/plugin/jsonschema/1-0-0",
     data: {
       id: id,
       version: version
+    }
+  }
+}
+
+export function repoPayload(
+  identifier: string,
+  name: string,
+  owner_id: string,
+  git_branch: string,
+  git_tag: string,
+) {
+  return {
+    schema: "iglu:com.software/repo/jsonschema/1-0-0",
+    data: {
+      identifier: identifier,
+      name: name,
+      owner_id: owner_id,
+      git_branch: git_branch,
+      git_tag: git_tag
+    }
+  }
+}
+
+export function authPayload(jwt: string) {
+  return {
+    schema: "iglu:com.software/auth/jsonschema/1-0-0",
+    data:  {
+      jwt: jwt
     }
   }
 }
