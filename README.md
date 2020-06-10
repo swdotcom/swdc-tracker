@@ -4,12 +4,8 @@ Sends data to snowplow. Use this to track events in plugins written in js.
 
 ## Install
 
-TODO
-
-## Build
-
 ```
-yarn build
+yarn add https://github.com/swdotcom/swdc-tracker.git
 ```
 
 ## Usage
@@ -48,4 +44,17 @@ export function openSomeFile() {
   })
   ...
 }
+```
+
+# Development
+
+## Install Deps
+```
+yarn
+```
+
+## Build
+
+```
+yarn build
 ```
