@@ -57,12 +57,12 @@ swdcTracker.trackEditorAction = ({
   plugin_id,
   plugin_version
 }: EditorActionParams) => {
-	const properties = {
-		schema: "iglu:com.software/editor_action/jsonschema/1-0-0",
-		data: {
-		  entity: entity,
-		  type: type,
-		  tz_offset_minutes: tz_offset_minutes
+  const properties = {
+    schema: "iglu:com.software/editor_action/jsonschema/1-0-0",
+    data: {
+      entity: entity,
+      type: type,
+      tz_offset_minutes: tz_offset_minutes
     }
   }
 
