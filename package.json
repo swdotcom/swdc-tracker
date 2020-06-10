@@ -1,10 +1,12 @@
 {
   "name": "swdc-tracker",
   "version": "1.0.0",
-  "description": "Send to snowplow",
+  "description": "swdc event tracker",
   "main": "dist",
   "types": "dist/index.d.js",
-  "author": "Bo Jacobson <bo@software.com>",
+  "publisher": "softwaredotcom",
+  "author": "software",
+  "license": "SEE LICENSE IN LICENSE",
   "prepublish": "tsc",
   "scripts": {
     "build": "tsc"

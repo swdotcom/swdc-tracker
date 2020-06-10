@@ -2,7 +2,17 @@
 
 Sends data to snowplow. Use this to track events in plugins written in js.
 
-## example usage
+## Install
+
+TODO
+
+## Build
+
+```
+yarn build
+```
+
+## Usage
 
 extension.ts
 ```ts
@@ -22,18 +32,19 @@ import swdcTracker from 'swdc-tracker'
 
 export function openSomeFile() {
   swdcTracker.trackEditorAction({
+    jwt: jwt,
     entity: "editor",
     type: "activate",
     tz_offset_minutes: 420,
-    file_name: "test filename",
-    file_path: "test/file/path",
-    file_syntax: "fortran",
+    file_name: "your_file.js",
+    file_path: "/path/to/your_file.js",
+    file_syntax: "javascript",
     file_line_count: 10,
-    file_character_count: 101,
-    project_name: "manhattan",
-    project_directory: "top_secret/plans/",
+    file_character_count: 100,
+    project_name: "your_project_name",
+    project_directory: "/path/to/your/project",
     plugin_id: 1,
-    plugin_version: "?.?.?"
+    plugin_version: "1.2.3"
   })
   ...
 }
