@@ -1,15 +1,21 @@
-export function filePayload(
+import { hashValue } from "./hash"
+
+export async function filePayload(
   name: string, 
   path: string, 
   syntax: string,
   line_count: number,
   character_count: number
 ) {
+
+  const hashedName = await hashValue(name);
+  const hashedPath = await hashValue(path);
+
   return {
     schema: "iglu:com.software/file/jsonschema/1-0-0",
     data: {
-      name: name,
-      path: path,
+      name: hashedName,
+      path: hashedPath,
       syntax: syntax,
       line_count: line_count,
       character_count: character_count
@@ -17,20 +23,24 @@ export function filePayload(
   }
 }
 
-export function projectPayload(
+export async function projectPayload(
   name: string,
   directory: string
 ) {
+
+  const hashedName = await hashValue(name);
+  const hashedDirectory = await hashValue(directory);
+
   return {
     schema: "iglu:com.software/project/jsonschema/1-0-0",
     data: {
-      name: name,
-      directory: directory
+      name: hashedName,
+      directory: hashedDirectory
     }
   }
 }
 
-export function pluginPayload(id?: number, version?: string) {
+export function pluginPayload(id: number, version: string) {
   return {
     schema: "iglu:com.software/plugin/jsonschema/1-0-0",
     data: {
@@ -40,21 +50,28 @@ export function pluginPayload(id?: number, version?: string) {
   }
 }
 
-export function repoPayload(
+export async function repoPayload(
   identifier: string,
   name: string,
   owner_id: string,
   git_branch: string,
   git_tag: string,
 ) {
+
+  const hashedName = await hashValue(name);
+  const hashedIdentifier = await hashValue(identifier);
+  const hashedOwnerId = await hashValue(owner_id);
+  const hashedGitBranch = await hashValue(git_branch);
+  const hashedGitTag = await hashValue(git_tag);
+
   return {
     schema: "iglu:com.software/repo/jsonschema/1-0-0",
     data: {
-      identifier: identifier,
-      name: name,
-      owner_id: owner_id,
-      git_branch: git_branch,
-      git_tag: git_tag
+      identifier: hashedIdentifier,
+      name: hashedName,
+      owner_id: hashedOwnerId,
+      git_branch: hashedGitBranch,
+      git_tag: hashedGitTag
     }
   }
 }
