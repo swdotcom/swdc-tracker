@@ -5,7 +5,7 @@ Sends data to snowplow. Use this to track events in plugins written in js.
 ## Install
 
 ```
-yarn add https://github.com/swdotcom/swdc-tracker.git
+yarn add swdc-tracker
 ```
 
 ## Usage
