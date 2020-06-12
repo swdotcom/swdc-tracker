@@ -9,7 +9,8 @@
   "license": "SEE LICENSE IN LICENSE",
   "prepublish": "tsc",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "yarn build"
   },
   "devDependencies": {
     "typescript": "^3.9.5"
