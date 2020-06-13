@@ -42,7 +42,7 @@ interface EditorActionParams {
   plugin_version: string
 }
 
-swdcTracker.trackEditorAction = ({
+swdcTracker.trackEditorAction = async ({
   jwt,
   entity, 
   type, 
@@ -66,14 +66,19 @@ swdcTracker.trackEditorAction = ({
     }
   }
 
-  const context = [
+  const _filePayload = await filePayload(file_name, file_path, file_syntax, file_line_count, file_character_count);
+  const _projectPayload = await projectPayload(project_name, project_directory);
+
+  const contexts = [
     authPayload(jwt),
-    filePayload(file_name, file_path, file_syntax, file_line_count, file_character_count),
-    projectPayload(project_name, project_directory),
+    _filePayload,
+    _projectPayload,
     pluginPayload(plugin_id, plugin_version)
   ]
 
-  swdcTracker.spTracker.trackUnstructEvent(properties, context)
+  swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
+
+  swdcTracker.spTracker.trackUnstructEvent(properties, contexts);
 }
 
 interface CodetimeParams {
@@ -147,15 +152,19 @@ swdcTracker.trackCodetime = ({
     }
   }
 
-  const context = [
+  const _filePayload = filePayload(file_name, file_path, file_syntax, file_line_count, file_character_count)
+  const _projectPayload = projectPayload(project_name, project_directory)
+  const _repoPayload = repoPayload(repo_identifier, repo_name, repo_owner_id, repo_git_branch, repo_git_tag)
+
+  const contexts = [
     authPayload(jwt),
-    filePayload(file_name, file_path, file_syntax, file_line_count, file_character_count),
-    projectPayload(project_name, project_directory),
+    _filePayload,
+    _projectPayload,
     pluginPayload(plugin_id, plugin_version),
-    repoPayload(repo_identifier, repo_name, repo_owner_id, repo_git_branch, repo_git_tag)
+    _repoPayload
   ]
 
-  swdcTracker.spTracker.trackUnstructEvent(properties, context)
+  swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
 }
 
 export default swdcTracker;
