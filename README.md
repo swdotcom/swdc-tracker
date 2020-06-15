@@ -46,6 +46,12 @@ export function openSomeFile() {
 }
 ```
 
+# Test mode
+
+swdc-tracker has test mode on by default. In order to send events to snowplow, set env `ENABLE_SWDC_TRACKER` to `"true"`
+
+test mode will log the event's properties and contexts so you can easily debug payloads being sent to snowplow.
+
 # Development
 
 ## Install Deps
