@@ -20,7 +20,16 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
     // initialize snowplow tracker
     const e = emitter(tracker_api_host)
+
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
+
+    if(process.env.ENABLE_SWDC_TRACKER === "true") {
+      swdcTracker.testMode = false
+      console.log('swdc-tracker initialized and ready to send events')
+    } else {
+      swdcTracker.testMode = true
+      console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events')
+    }
   } catch(e) {
     console.log("swdcTracker failed to initialize", e)
   }
@@ -76,9 +85,11 @@ swdcTracker.trackEditorAction = async ({
     pluginPayload(plugin_id, plugin_version)
   ]
 
-  swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
-
-  swdcTracker.spTracker.trackUnstructEvent(properties, contexts);
+  if(swdcTracker.testMode){
+    testEvent(properties, contexts)
+  } else {
+    swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
+  }
 }
 
 interface CodetimeParams {
@@ -164,7 +175,19 @@ swdcTracker.trackCodetime = ({
     _repoPayload
   ]
 
-  swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
+  if(swdcTracker.testMode){
+    testEvent(properties, contexts)
+  } else {
+    swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
+  }
+}
+
+function testEvent(properties: any, contexts: any): void {
+  const event = {
+    properties: properties,
+    contexts: contexts
+  }
+  console.log("swdc-tracker test mode on. trackUnstructEvent was called with the following payload: ", event)
 }
 
 export default swdcTracker;
