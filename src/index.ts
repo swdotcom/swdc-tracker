@@ -6,7 +6,7 @@ import {
   repoPayload,
   authPayload
 } from './utils/data_structures';
-import { DataEvent, dataEventPayload } from "./models/data_event.model";
+import { DomEvent, domEventPayload } from "./models/dom_event.model";
 
 const snowplow = require('snowplow-tracker');
 const emitter = snowplow.emitter;
@@ -192,21 +192,21 @@ swdcTracker.trackCodetime = ({
  * @param jwt - the authorization token
  * @param dataEvent - the DataEvent properties
  */
-swdcTracker.trackDataEvent = async (jwt: string, dataEvent: DataEvent): Promise<any> => {
+swdcTracker.trackDomEvent = async (jwt: string, domEvent: DomEvent): Promise<any> => {
 
   // build the schema with the incoming props
   const properties = {
     schema: "iglu:com.software/code_event/jsonschema/1-0-0",
-    data: { ...dataEvent }
+    data: { ...domEvent }
   }
 
   // create the payload
-  const _dataEventPayload = await dataEventPayload(properties.data);
+  const _domEventPayload = await domEventPayload(properties.data);
 
   // crate the context with the authorization info
   const contexts = [
     authPayload(jwt),
-    _dataEventPayload
+    _domEventPayload
   ]
 
   if (swdcTracker.testMode) {

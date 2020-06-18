@@ -1,5 +1,5 @@
 // DataEvent interface for the data event payload
-export interface DataEvent {
+export interface DomEvent {
   type: string,
   name: string,
   description: string,
@@ -13,9 +13,9 @@ export interface DataEvent {
   timezone: string
 }
 
-export async function dataEventPayload(params: DataEvent) {
+export async function domEventPayload(params: DomEvent) {
   return {
-    schema: "iglu:com.software/code_event/jsonschema/1-0-0",
+    schema: "iglu:com.software/dom_event/jsonschema/1-0-0",
     data: {
       ...params
     }
