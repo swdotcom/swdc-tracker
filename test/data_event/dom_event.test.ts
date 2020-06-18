@@ -34,9 +34,9 @@ describe("Test data event functions", function () {
       timestamp_local: ts - tz_offset_minutes,
       tz_offset_minutes,
       timezone: "America/Los_Angeles",
-      pluginId: 2,
+      plugin_id: 2,
       os: "Darwin",
-      version: "2.1.20",
+      plugin_version: "2.1.20",
       hostname: "MacOs-User1",
     };
     const payloadData = await swdcTracker.trackDomEvent("JWT 123", eventData);
