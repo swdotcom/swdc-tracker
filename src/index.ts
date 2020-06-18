@@ -6,11 +6,12 @@ import {
   repoPayload,
   authPayload
 } from './utils/data_structures';
+import { DataEvent, dataEventPayload } from "./models/data_event.model";
 
 const snowplow = require('snowplow-tracker');
 const emitter = snowplow.emitter;
 const tracker = snowplow.tracker;
-const swdcTracker = <any>{}
+const swdcTracker = <any>{};
 
 swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string) => {
   try {
@@ -23,22 +24,24 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
 
-    if(process.env.ENABLE_SWDC_TRACKER === "true") {
+    if (process.env.ENABLE_SWDC_TRACKER === "true") {
       swdcTracker.testMode = false
       console.log(`swdc-tracker initialized and ready to send events to ${tracker_api_host}`)
     } else {
       swdcTracker.testMode = true
       console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events')
     }
-  } catch(e) {
-    console.log("swdcTracker failed to initialize", e)
+    return { status: "success" };
+  } catch (e) {
+    console.log("swdcTracker failed to initialize", e);
+    return { status: "failed", message: `Failed to initialize. ${e.message}` };
   }
 };
 
 interface EditorActionParams {
   jwt: string,
-  entity: string, 
-  type: string, 
+  entity: string,
+  type: string,
   tz_offset_minutes: number,
   file_name: string,
   file_path: string,
@@ -53,8 +56,8 @@ interface EditorActionParams {
 
 swdcTracker.trackEditorAction = async ({
   jwt,
-  entity, 
-  type, 
+  entity,
+  type,
   tz_offset_minutes,
   file_name,
   file_path,
@@ -85,7 +88,7 @@ swdcTracker.trackEditorAction = async ({
     pluginPayload(plugin_id, plugin_version)
   ]
 
-  if(swdcTracker.testMode){
+  if (swdcTracker.testMode) {
     testEvent(properties, contexts)
   } else {
     swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
@@ -94,7 +97,7 @@ swdcTracker.trackEditorAction = async ({
 
 interface CodetimeParams {
   jwt: string,
-  keystrokes: number, 
+  keystrokes: number,
   chars_added: number,
   chars_deleted: number,
   chars_pasted: number,
@@ -122,7 +125,7 @@ interface CodetimeParams {
 
 swdcTracker.trackCodetime = ({
   jwt,
-  keystrokes, 
+  keystrokes,
   chars_added,
   chars_deleted,
   chars_pasted,
@@ -175,19 +178,64 @@ swdcTracker.trackCodetime = ({
     _repoPayload
   ]
 
-  if(swdcTracker.testMode){
+  if (swdcTracker.testMode) {
     testEvent(properties, contexts)
   } else {
     swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
   }
 }
 
-function testEvent(properties: any, contexts: any): void {
+/**
+ * Track plugin data events. These are the attributes that
+ * give information about how the user interacts with the plugin features
+ * such as expanding or collapsing the tree view. 
+ * @param jwt - the authorization token
+ * @param dataEvent - the DataEvent properties
+ */
+swdcTracker.trackDataEvent = async (jwt: string, dataEvent: DataEvent): Promise<any> => {
+
+  // build the schema with the incoming props
+  const properties = {
+    schema: "iglu:com.software/code_event/jsonschema/1-0-0",
+    data: { ...dataEvent }
+  }
+
+  // create the payload
+  const _dataEventPayload = await dataEventPayload(properties.data);
+
+  // crate the context with the authorization info
+  const contexts = [
+    authPayload(jwt),
+    _dataEventPayload
+  ]
+
+  if (swdcTracker.testMode) {
+    // test mode - console log the event
+    return testEvent(properties, contexts)
+  }
+
+  // track the event.
+  // trackUnstrucEvent returns PayloadData
+  //  PayloadData {
+  //    add: (key: string, value?: string) => void,
+  //    addDict: (dict: Object) => void,
+  //    addJson: (keyIfEncoded: string, keyIfNotEncoded: string, json: Object) => void,
+  //    build: () => Object;
+  //  }
+  return await swdcTracker.spTracker.trackUnstructEvent(properties, contexts);
+
+}
+
+function testEvent(properties: any, contexts: any): any {
   const event = {
     properties: properties,
     contexts: contexts
+  };
+
+  if (!process.env.DISABLE_SWDC_TRACKER_LOGGING) {
+    console.log("swdc-tracker test mode on. trackUnstructEvent was called with the following payload: ", event);
   }
-  console.log("swdc-tracker test mode on. trackUnstructEvent was called with the following payload: ", event)
+  return event;
 }
 
 export default swdcTracker;

@@ -1,2 +1,8 @@
-node_modules
+# Dependency directory
+# https://docs.npmjs.com/cli/shrinkwrap#caveats
+node_modules/*
 dist
+# Debug log from npm
+npm-debug.log
+yarn-error.log
+.DS_Store

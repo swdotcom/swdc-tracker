@@ -10,9 +10,16 @@
   "prepublish": "tsc",
   "scripts": {
     "build": "tsc",
-    "prepare": "yarn build"
+    "prepare": "yarn build",
+    "test": "yarn build && env DISABLE_SWDC_TRACKER_LOGGING=true mocha -r ts-node/register test/**/*.ts --reporter spec --timeout 20000 --exit"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "chai": "^4.2.0",
+    "mocha": "^8.0.1",
+    "sinon": "^9.0.2",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
   },
   "dependencies": {
