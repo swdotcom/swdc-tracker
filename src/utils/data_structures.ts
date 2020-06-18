@@ -1,8 +1,8 @@
 import { hashValue } from "./hash"
 
 export async function filePayload(
-  name: string, 
-  path: string, 
+  name: string,
+  path: string,
   syntax: string,
   line_count: number,
   character_count: number
@@ -16,9 +16,9 @@ export async function filePayload(
     data: {
       name: hashedName,
       path: hashedPath,
-      syntax: syntax,
-      line_count: line_count,
-      character_count: character_count
+      syntax,
+      line_count,
+      character_count
     }
   }
 }
@@ -44,8 +44,8 @@ export function pluginPayload(id: number, version: string) {
   return {
     schema: "iglu:com.software/plugin/jsonschema/1-0-0",
     data: {
-      id: id,
-      version: version
+      id,
+      version
     }
   }
 }
@@ -79,8 +79,8 @@ export async function repoPayload(
 export function authPayload(jwt: string) {
   return {
     schema: "iglu:com.software/auth/jsonschema/1-0-0",
-    data:  {
-      jwt: jwt
+    data: {
+      jwt
     }
   }
 }
