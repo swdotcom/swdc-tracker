@@ -39,7 +39,7 @@ describe("Test data event functions", function () {
       version: "2.1.20",
       hostname: "MacOs-User1",
     };
-    const payloadData = await swdcTracker.trackDataEvent("JWT 123", eventData);
+    const payloadData = await swdcTracker.trackDomEvent("JWT 123", eventData);
     const props = payloadData.properties;
     const contexts = payloadData.contexts;
     expect(props.schema).to.include("code_event");
