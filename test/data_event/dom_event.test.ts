@@ -33,9 +33,8 @@ describe("Test data event functions", function () {
       timestamp: ts,
       timestamp_local: ts - tz_offset_minutes,
       tz_offset_minutes,
-      timezone: "America/Los_Angeles",
       plugin_id: 2,
-      os: "Darwin",
+      plugin_name: "code-time",
       plugin_version: "2.1.20",
       hostname: "MacOs-User1",
     };
@@ -45,5 +44,6 @@ describe("Test data event functions", function () {
     expect(props.schema).to.include("code_event");
     expect(props.data.type).to.equal("mouse");
     expect(contexts.length).to.equal(2);
+    expect(props.data.plugin_id).to.equal(2);
   })
 });

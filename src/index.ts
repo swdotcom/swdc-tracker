@@ -190,7 +190,7 @@ swdcTracker.trackCodetime = ({
  * give information about how the user interacts with the plugin features
  * such as expanding or collapsing the tree view. 
  * @param jwt - the authorization token
- * @param dataEvent - the DataEvent properties
+ * @param domEvent - the DomEvent properties (extends plugin, event_meta, and time_info)
  */
 swdcTracker.trackDomEvent = async (jwt: string, domEvent: DomEvent): Promise<any> => {
 
