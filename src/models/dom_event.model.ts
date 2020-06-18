@@ -6,9 +6,9 @@ export interface DomEvent {
   timestamp: number,
   timestamp_local: number,
   tz_offset_minutes: number,
-  pluginId: number,
+  plugin_id: number,
   os: string,
-  version: string,
+  plugin_version: string,
   hostname: string,
   timezone: string
 }
