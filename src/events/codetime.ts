@@ -1,10 +1,10 @@
-import { Repo } from "../entities/repo";
-import { Project } from "../entities/project";
-import { File } from "../entities/file";
-import { Plugin } from "../entities/plugin";
+import { RepoInterface } from "../entities/repo";
+import { ProjectInterface } from "../entities/project";
+import { FileInterface } from "../entities/file";
+import { PluginInterface } from "../entities/plugin";
 
 // The CodeTime event
-export interface CodeTime {
+export interface CodeTimeInterface {
   keystrokes: number,
   chars_added: number,
   chars_deleted: number,
@@ -17,7 +17,7 @@ export interface CodeTime {
   tz_offset_minutes: number
 }
 
-export class CodeTimeImpl implements CodeTime {
+export class CodeTime implements CodeTimeInterface {
   public keystrokes: number;
   public chars_added: number;
   public chars_deleted: number;
@@ -29,30 +29,39 @@ export class CodeTimeImpl implements CodeTime {
   public end_time: number;
   public tz_offset_minutes: number;
 
-  constructor(params: CodeTime) {
-    this.keystrokes = params.keystrokes;
-    this.chars_added = params.chars_added;
-    this.chars_deleted = params.chars_deleted;
-    this.chars_pasted = params.chars_pasted;
-    this.pastes = params.pastes;
-    this.lines_added = params.lines_added;
-    this.lines_deleted = params.lines_deleted;
-    this.start_time = params.start_time;
-    this.end_time = params.end_time;
-    this.tz_offset_minutes = params.tz_offset_minutes;
+  constructor(data: CodeTimeInterface) {
+    this.keystrokes = data.keystrokes;
+    this.chars_added = data.chars_added;
+    this.chars_deleted = data.chars_deleted;
+    this.chars_pasted = data.chars_pasted;
+    this.pastes = data.pastes;
+    this.lines_added = data.lines_added;
+    this.lines_deleted = data.lines_deleted;
+    this.start_time = data.start_time;
+    this.end_time = data.end_time;
+    this.tz_offset_minutes = data.tz_offset_minutes;
   }
-}
 
-export interface CodeTimeParams extends Plugin, Repo, Project, File, CodeTime {
-  jwt: string
-}
+  buildPayload() {
 
-export async function buildCodeTimePayload(params: CodeTime) {
-
-  return {
-    schema: "iglu:com.software/codetime/jsonschema/1-0-0",
-    data: {
-      ...params
+    return {
+      schema: "iglu:com.software/codetime/jsonschema/1-0-1",
+      data: {
+        keystrokes: this.keystrokes,
+        chars_added: this.chars_deleted,
+        chars_deleted: this.chars_deleted,
+        chars_pasted: this.chars_pasted,
+        pastes: this.pastes,
+        lines_added: this.lines_added,
+        lines_deleted: this.lines_deleted,
+        start_time: this.start_time,
+        end_time: this.end_time,
+        tz_offset_minutes: this.tz_offset_minutes
+      }
     }
   }
+}
+
+export interface CodeTimeParams extends PluginInterface, RepoInterface, ProjectInterface, FileInterface, CodeTimeInterface {
+  jwt: string
 }

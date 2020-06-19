@@ -1,35 +1,37 @@
-import { Plugin } from "../entities/plugin";
-import { File } from "../entities/file";
-import { Project } from "../entities/project";
+import { PluginInterface } from "../entities/plugin";
+import { FileInterface } from "../entities/file";
+import { ProjectInterface } from "../entities/project";
 
 // The EditorAction event
-export interface EditorAction {
+export interface EditorActionInterface {
   entity: string,
   type: string,
   tz_offset_minutes: number
 }
 
-export class EditorActionImpl implements EditorAction {
+export class EditorAction implements EditorActionInterface {
   public entity: string;
   public type: string;
   public tz_offset_minutes: number;
 
-  constructor(params: EditorAction) {
-    this.entity = params.entity;
-    this.type = params.type;
-    this.tz_offset_minutes = params.tz_offset_minutes;
+  constructor(data: EditorActionInterface) {
+    this.entity = data.entity;
+    this.type = data.type;
+    this.tz_offset_minutes = data.tz_offset_minutes;
   }
-}
 
-export interface EditorActionParams extends Plugin, File, Project, EditorAction {
-  jwt: string
-}
-
-export async function buildEditorActionPayload(params: EditorAction) {
-  return {
-    schema: "iglu:com.software/editor_action/jsonschema/1-0-0",
-    data: {
-      ...params
+  buildPayload() {
+    return {
+      schema: "iglu:com.software/editor_action/jsonschema/1-0-0",
+      data: {
+        entity: this.entity,
+        type: this.type,
+        tz_offset_minutes: this.tz_offset_minutes
+      }
     }
   }
+}
+
+export interface EditorActionParams extends PluginInterface, FileInterface, ProjectInterface, EditorActionInterface {
+  jwt: string
 }

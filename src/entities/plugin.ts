@@ -1,27 +1,29 @@
 // The plugin entity
-export interface Plugin {
+export interface PluginInterface {
   plugin_id: number,
   plugin_version: string,
   plugin_name: string
 }
 
-export class PluginImpl implements Plugin {
+export class Plugin implements PluginInterface {
   public plugin_id: number;
   public plugin_version: string;
   public plugin_name: string;
 
-  constructor(params: Plugin) {
-    this.plugin_id = params.plugin_id;
-    this.plugin_version = params.plugin_version;
-    this.plugin_name = params.plugin_name;
+  constructor(data: PluginInterface) {
+    this.plugin_id = data.plugin_id;
+    this.plugin_version = data.plugin_version;
+    this.plugin_name = data.plugin_name;
   }
-}
 
-export async function buildPluginPayload(plugin: Plugin) {
-  return {
-    schema: "iglu:com.software/plugin/jsonschema/1-0-0",
-    data: {
-      ...plugin
+  buildPayload() {
+    return {
+      schema: "iglu:com.software/plugin/jsonschema/1-0-0",
+      data: {
+        plugin_id: this.plugin_id,
+        plugin_version: this.plugin_version,
+        plugin_name: this.plugin_name
+      }
     }
   }
 }

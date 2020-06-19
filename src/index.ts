@@ -1,11 +1,11 @@
 import { get } from "./utils/http";
-import { buildCodeTimePayload, CodeTimeParams, CodeTimeImpl } from "./events/codetime";
-import { buildEditorActionPayload, EditorActionParams, EditorActionImpl } from "./events/editor_action";
-import { buildAuthPayload } from "./entities/auth";
-import { buildProjectPayload, ProjectImpl } from "./entities/project";
-import { buildRepoPayload, RepoImpl } from "./entities/repo";
-import { buildFilePayload, FileImpl } from "./entities/file";
-import { buildPluginPayload, PluginImpl } from "./entities/plugin";
+import { CodeTimeParams, CodeTime } from "./events/codetime";
+import { EditorActionParams, EditorAction } from "./events/editor_action";
+import { Auth } from "./entities/auth";
+import { Project } from "./entities/project";
+import { Repo } from "./entities/repo";
+import { File } from "./entities/file";
+import { Plugin } from "./entities/plugin";
 
 const snowplow = require('snowplow-tracker');
 const emitter = snowplow.emitter;
@@ -45,26 +45,29 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
 
   // build the strict types
   // code time
-  const codetime: CodeTimeImpl = new CodeTimeImpl(params);
+  const codetime: CodeTime = new CodeTime(params);
   // project
-  const project: ProjectImpl = new ProjectImpl(params);
+  const project: Project = new Project(params);
   // repo
-  const repo: RepoImpl = new RepoImpl(params);
+  const repo: Repo = new Repo(params);
   // file
-  const file: FileImpl = new FileImpl(params);
+  const file: File = new File(params);
   // plugin
-  const plugin: PluginImpl = new PluginImpl(params);
+  const plugin: Plugin = new Plugin(params);
+  // auth
+  const auth: Auth = new Auth(params);
 
   // create the payloads
-  const _codetimePayload = await buildCodeTimePayload(codetime);
-  const _projecPayload = await buildProjectPayload(project);
-  const _repoPayload = await buildRepoPayload(repo);
-  const _filePayload = await buildFilePayload(file);
-  const _pluginPayload = await buildPluginPayload(plugin);
+  const _codetimePayload = await codetime.buildPayload();
+  const _projecPayload = await project.buildPayload();
+  const _repoPayload = await repo.buildPayload();
+  const _filePayload = await file.buildPayload();
+  const _pluginPayload = await plugin.buildPayload();
+  const _authPayload = await auth.buildPayload();
 
   // crate the context with the authorization info
   const contexts = [
-    buildAuthPayload(params.jwt),
+    _authPayload,
     _codetimePayload,
     _projecPayload,
     _repoPayload,
@@ -90,23 +93,26 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
 swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any> => {
 
   // build the strict types
-  const editorAction: EditorActionImpl = new EditorActionImpl(params);
+  const editorAction: EditorAction = new EditorAction(params);
   // plugin
-  const plugin: PluginImpl = new PluginImpl(params);
+  const plugin: Plugin = new Plugin(params);
   // file
-  const file: FileImpl = new FileImpl(params);
+  const file: File = new File(params);
   // project
-  const project: ProjectImpl = new ProjectImpl(params);
+  const project: Project = new Project(params);
+  // auth
+  const auth: Auth = new Auth(params);
 
   // create the payload
-  const _editorActionPayload = await buildEditorActionPayload(editorAction);
-  const _pluginPayload = await buildPluginPayload(plugin);
-  const _filePayload = await buildFilePayload(file);
-  const _projecPayload = await buildProjectPayload(project);
+  const _editorActionPayload = await editorAction.buildPayload();
+  const _projecPayload = await project.buildPayload();
+  const _filePayload = await file.buildPayload();
+  const _pluginPayload = await plugin.buildPayload();
+  const _authPayload = await auth.buildPayload();
 
   // crate the context with the authorization info
   const contexts = [
-    buildAuthPayload(params.jwt),
+    _authPayload,
     _editorActionPayload,
     _pluginPayload,
     _filePayload,

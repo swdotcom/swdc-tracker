@@ -1,31 +1,31 @@
 import { hashValue } from "../utils/hash";
 
 // The project entity
-export interface Project {
+export interface ProjectInterface {
   project_name: string,
   project_directory: string
 }
 
-export class ProjectImpl implements Project {
+export class Project implements ProjectInterface {
   public project_name: string;
   public project_directory: string;
 
-  constructor(params: Project) {
-    this.project_name = params.project_name;
-    this.project_directory = params.project_directory;
+  constructor(data: ProjectInterface) {
+    this.project_name = data.project_name;
+    this.project_directory = data.project_directory;
   }
-}
 
-export async function buildProjectPayload(project: Project) {
+  async buildPayload() {
 
-  const hashedName = await hashValue(project.project_name);
-  const hashedDirectory = await hashValue(project.project_directory);
+    const hashedName = await hashValue(this.project_name);
+    const hashedDirectory = await hashValue(this.project_directory);
 
-  return {
-    schema: "iglu:com.software/project/jsonschema/1-0-0",
-    data: {
-      project_name: hashedName,
-      project_directory: hashedDirectory
+    return {
+      schema: "iglu:com.software/project/jsonschema/1-0-0",
+      data: {
+        project_name: hashedName,
+        project_directory: hashedDirectory
+      }
     }
   }
 }
