@@ -4,7 +4,7 @@ const http = require("../../src/utils/http");
 const expect = require("chai").expect;
 const sinon = require("sinon");
 
-describe("Test data event functions", function () {
+describe("Test editor action event functions", function () {
 
   const sandbox = sinon.createSandbox();
 
@@ -17,33 +17,34 @@ describe("Test data event functions", function () {
         }
       }
     });
-    await swdcTracker.initialize("api.software.com", "event_data", "swdotcom-vscode");
+    await swdcTracker.initialize("api.software.com", "editor_action", "swdotcom-vscode");
   });
 
-  it("Validate creating a data event payload", async function () {
+  after(() => {
+    sandbox.restore();
+  });
 
-    const now = new Date();
-    const ts = Math.round(now.getTime() / 1000);
-    const tz_offset_minutes = 420;
-
+  it("Validate creating a editor action payload", async function () {
     const eventData = {
+      jwt: "JWT 123",
+      entity: "editor",
       type: "mouse",
       name: "click",
       description: "TreeViewExpand",
-      timestamp: ts,
-      timestamp_local: ts - tz_offset_minutes,
-      tz_offset_minutes,
+      tz_offset_minutes: 420,
       plugin_id: 2,
       plugin_name: "code-time",
       plugin_version: "2.1.20",
-      hostname: "MacOs-User1",
     };
-    const payloadData = await swdcTracker.trackDomEvent("JWT 123", eventData);
+    const payloadData = await swdcTracker.trackEditorAction(eventData);
+
     const props = payloadData.properties;
     const contexts = payloadData.contexts;
-    expect(props.schema).to.include("code_event");
+    expect(props.schema).to.include("editor_action");
     expect(props.data.type).to.equal("mouse");
-    expect(contexts.length).to.equal(2);
-    expect(props.data.plugin_id).to.equal(2);
+
+    // get the plugin context
+    const pluginContext: any = contexts.find((n: any) => n.schema.includes("plugin"));
+    expect(pluginContext.data.plugin_id).to.equal(2);
   })
 });

@@ -1,12 +1,11 @@
 import { get } from "./utils/http";
-import {
-  filePayload,
-  projectPayload,
-  pluginPayload,
-  repoPayload,
-  authPayload
-} from './utils/data_structures';
-import { DomEvent, domEventPayload } from "./models/dom_event.model";
+import { buildCodeTimePayload, CodeTimeParams, CodeTimeImpl } from "./events/codetime";
+import { buildEditorActionPayload, EditorActionParams, EditorActionImpl } from "./events/editor_action";
+import { buildAuthPayload } from "./entities/auth";
+import { buildProjectPayload, ProjectImpl } from "./entities/project";
+import { buildRepoPayload, RepoImpl } from "./entities/repo";
+import { buildFilePayload, FileImpl } from "./entities/file";
+import { buildPluginPayload, PluginImpl } from "./entities/plugin";
 
 const snowplow = require('snowplow-tracker');
 const emitter = snowplow.emitter;
@@ -38,192 +37,91 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
   }
 };
 
-interface EditorActionParams {
-  jwt: string,
-  entity: string,
-  type: string,
-  tz_offset_minutes: number,
-  file_name: string,
-  file_path: string,
-  file_syntax: string,
-  file_line_count: number,
-  file_character_count: number,
-  project_name: string,
-  project_directory: string,
-  plugin_id: number,
-  plugin_version: string
-}
-
-swdcTracker.trackEditorAction = async ({
-  jwt,
-  entity,
-  type,
-  tz_offset_minutes,
-  file_name,
-  file_path,
-  file_syntax,
-  file_line_count,
-  file_character_count,
-  project_name,
-  project_directory,
-  plugin_id,
-  plugin_version
-}: EditorActionParams) => {
-  const properties = {
-    schema: "iglu:com.software/editor_action/jsonschema/1-0-0",
-    data: {
-      entity: entity,
-      type: type,
-      tz_offset_minutes: tz_offset_minutes
-    }
-  }
-
-  const _filePayload = await filePayload(file_name, file_path, file_syntax, file_line_count, file_character_count);
-  const _projectPayload = await projectPayload(project_name, project_directory);
-
-  const contexts = [
-    authPayload(jwt),
-    _filePayload,
-    _projectPayload,
-    pluginPayload(plugin_id, plugin_version)
-  ]
-
-  if (swdcTracker.testMode) {
-    testEvent(properties, contexts)
-  } else {
-    swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
-  }
-}
-
-interface CodetimeParams {
-  jwt: string,
-  keystrokes: number,
-  chars_added: number,
-  chars_deleted: number,
-  chars_pasted: number,
-  pastes: number,
-  lines_added: number,
-  lines_deleted: number,
-  start_time: string, // UTC start timestamp in rfc 3339 format
-  end_time: string, // UTC end timestamp inrfc 3339 format 
-  tz_offset_minutes: number,
-  file_name: string,
-  file_path: string,
-  file_syntax: string,
-  file_line_count: number,
-  file_character_count: number,
-  project_name: string,
-  project_directory: string,
-  plugin_id: number,
-  plugin_version: string,
-  repo_identifier: string,
-  repo_name: string,
-  repo_owner_id: string,
-  repo_git_branch: string,
-  repo_git_tag: string
-}
-
-swdcTracker.trackCodetime = ({
-  jwt,
-  keystrokes,
-  chars_added,
-  chars_deleted,
-  chars_pasted,
-  pastes,
-  lines_added,
-  lines_deleted,
-  start_time, // UTC start timestamp in rfc 3339 format
-  end_time, // UTC end timestamp inrfc 3339 format 
-  tz_offset_minutes,
-  file_name,
-  file_path,
-  file_syntax,
-  file_line_count,
-  file_character_count,
-  project_name,
-  project_directory,
-  plugin_id,
-  plugin_version,
-  repo_identifier,
-  repo_name,
-  repo_owner_id,
-  repo_git_branch,
-  repo_git_tag
-}: CodetimeParams) => {
-  const properties = {
-    schema: "iglu:com.software/codetime/jsonschema/1-0-0",
-    data: {
-      keystrokes: keystrokes,
-      chars_added: chars_added,
-      chars_deleted: chars_deleted,
-      chars_pasted: chars_pasted,
-      pastes: pastes,
-      lined_added: lines_added,
-      lined_deleted: lines_deleted,
-      start_time: start_time,
-      end_time: end_time,
-      tz_offset_minutes: tz_offset_minutes
-    }
-  }
-
-  const _filePayload = filePayload(file_name, file_path, file_syntax, file_line_count, file_character_count)
-  const _projectPayload = projectPayload(project_name, project_directory)
-  const _repoPayload = repoPayload(repo_identifier, repo_name, repo_owner_id, repo_git_branch, repo_git_tag)
-
-  const contexts = [
-    authPayload(jwt),
-    _filePayload,
-    _projectPayload,
-    pluginPayload(plugin_id, plugin_version),
-    _repoPayload
-  ]
-
-  if (swdcTracker.testMode) {
-    testEvent(properties, contexts)
-  } else {
-    swdcTracker.spTracker.trackUnstructEvent(properties, contexts)
-  }
-}
-
 /**
- * Track plugin data events. These are the attributes that
- * give information about how the user interacts with the plugin features
- * such as expanding or collapsing the tree view. 
  * @param jwt - the authorization token
- * @param domEvent - the DomEvent properties (extends plugin, event_meta, and time_info)
+ * @param codetimeEvent - the CodeTime event extends Repo, Project, File 
  */
-swdcTracker.trackDomEvent = async (jwt: string, domEvent: DomEvent): Promise<any> => {
+swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> => {
 
-  // build the schema with the incoming props
-  const properties = {
-    schema: "iglu:com.software/code_event/jsonschema/1-0-0",
-    data: { ...domEvent }
-  }
+  // build the strict types
+  // code time
+  const codetime: CodeTimeImpl = new CodeTimeImpl(params);
+  // project
+  const project: ProjectImpl = new ProjectImpl(params);
+  // repo
+  const repo: RepoImpl = new RepoImpl(params);
+  // file
+  const file: FileImpl = new FileImpl(params);
+  // plugin
+  const plugin: PluginImpl = new PluginImpl(params);
 
-  // create the payload
-  const _domEventPayload = await domEventPayload(properties.data);
+  // create the payloads
+  const _codetimePayload = await buildCodeTimePayload(codetime);
+  const _projecPayload = await buildProjectPayload(project);
+  const _repoPayload = await buildRepoPayload(repo);
+  const _filePayload = await buildFilePayload(file);
+  const _pluginPayload = await buildPluginPayload(plugin);
 
   // crate the context with the authorization info
   const contexts = [
-    authPayload(jwt),
-    _domEventPayload
+    buildAuthPayload(params.jwt),
+    _codetimePayload,
+    _projecPayload,
+    _repoPayload,
+    _filePayload,
+    _pluginPayload
   ]
 
   if (swdcTracker.testMode) {
     // test mode - console log the event
-    return testEvent(properties, contexts)
+    return testEvent(_codetimePayload, contexts)
   }
 
   // track the event.
-  // trackUnstrucEvent returns PayloadData
-  //  PayloadData {
-  //    add: (key: string, value?: string) => void,
-  //    addDict: (dict: Object) => void,
-  //    addJson: (keyIfEncoded: string, keyIfNotEncoded: string, json: Object) => void,
-  //    build: () => Object;
-  //  }
-  return await swdcTracker.spTracker.trackUnstructEvent(properties, contexts);
+  // trackUnstrucEvent returns...
+  // {add <func(key, val)>, addDict <func(dict)>, addJson <func(keyIfEncoded, keyIfNotEncoded, json)>, build <func()>}
+  return await swdcTracker.spTracker.trackUnstructEvent(_codetimePayload, contexts);
+}
 
+/**
+ * @param jwt - the authorization token
+ * @param editorActionEvent - the DomEvent properties (extends plugin, event_meta, and time_info)
+ */
+swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any> => {
+
+  // build the strict types
+  const editorAction: EditorActionImpl = new EditorActionImpl(params);
+  // plugin
+  const plugin: PluginImpl = new PluginImpl(params);
+  // file
+  const file: FileImpl = new FileImpl(params);
+  // project
+  const project: ProjectImpl = new ProjectImpl(params);
+
+  // create the payload
+  const _editorActionPayload = await buildEditorActionPayload(editorAction);
+  const _pluginPayload = await buildPluginPayload(plugin);
+  const _filePayload = await buildFilePayload(file);
+  const _projecPayload = await buildProjectPayload(project);
+
+  // crate the context with the authorization info
+  const contexts = [
+    buildAuthPayload(params.jwt),
+    _editorActionPayload,
+    _pluginPayload,
+    _filePayload,
+    _projecPayload
+  ]
+
+  if (swdcTracker.testMode) {
+    // test mode - console log the event
+    return testEvent(_editorActionPayload, contexts)
+  }
+
+  // track the event.
+  // trackUnstrucEvent returns...
+  // {add <func(key, val)>, addDict <func(dict)>, addJson <func(keyIfEncoded, keyIfNotEncoded, json)>, build <func()>}
+  return await swdcTracker.spTracker.trackUnstructEvent(_editorActionPayload, contexts);
 }
 
 function testEvent(properties: any, contexts: any): any {
