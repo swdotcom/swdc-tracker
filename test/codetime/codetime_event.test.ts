@@ -1,4 +1,5 @@
 import swdcTracker from "../../src/index";
+import { TrackerResponse } from "../../src/utils/response";
 
 const http = require("../../src/utils/http");
 const expect = require("chai").expect;
@@ -42,8 +43,12 @@ describe("Test codetime event functions", function () {
       project_name: "foo",
       project_directory: "baz"
     };
-    const payloadData = await swdcTracker.trackCodeTimeEvent(eventData);
+    const response: TrackerResponse = await swdcTracker.trackCodeTimeEvent(eventData);
 
+    expect(response.status).to.equal(200);
+
+    // get the data
+    const payloadData = response.data;
     const props = payloadData.properties;
     const contexts = payloadData.contexts;
     expect(props.schema).to.include("codetime");

@@ -6,13 +6,16 @@ import { Project } from "./entities/project";
 import { Repo } from "./entities/repo";
 import { File } from "./entities/file";
 import { Plugin } from "./entities/plugin";
+import { success, error, TrackerResponse } from "./utils/response";
+import { getTrackerMode, TrackerMode } from "./utils/env_helper";
 
-const snowplow = require('snowplow-tracker');
+const snowplow = require("snowplow-tracker");
+
 const emitter = snowplow.emitter;
 const tracker = snowplow.tracker;
 const swdcTracker = <any>{};
 
-swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string) => {
+swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string): Promise<TrackerResponse> => {
   try {
     // fetch tracker_api from plugin config 
     const result = await get(swdcApiHost, "/plugins/config")
@@ -23,17 +26,15 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
 
-    if (process.env.ENABLE_SWDC_TRACKER === "true") {
-      swdcTracker.testMode = false
+    if (getTrackerMode() === TrackerMode.PROD) {
       console.log(`swdc-tracker initialized and ready to send events to ${tracker_api_host}`)
     } else {
-      swdcTracker.testMode = true
       console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events')
     }
-    return { status: "success" };
+    return success();
   } catch (e) {
     console.log("swdcTracker failed to initialize", e);
-    return { status: "failed", message: `Failed to initialize. ${e.message}` };
+    return error(500, `Failed to initialize. ${e.message}`);
   }
 };
 
@@ -75,7 +76,7 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
     _pluginPayload
   ]
 
-  if (swdcTracker.testMode) {
+  if (getTrackerMode() === TrackerMode.TEST) {
     // test mode - console log the event
     return testEvent(_codetimePayload, contexts)
   }
@@ -119,7 +120,7 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
     _projecPayload
   ]
 
-  if (swdcTracker.testMode) {
+  if (getTrackerMode() === TrackerMode.TEST) {
     // test mode - console log the event
     return testEvent(_editorActionPayload, contexts)
   }
@@ -130,7 +131,7 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
   return await swdcTracker.spTracker.trackUnstructEvent(_editorActionPayload, contexts);
 }
 
-function testEvent(properties: any, contexts: any): any {
+function testEvent(properties: any, contexts: any): TrackerResponse {
   const event = {
     properties: properties,
     contexts: contexts
@@ -139,7 +140,7 @@ function testEvent(properties: any, contexts: any): any {
   if (!process.env.DISABLE_SWDC_TRACKER_LOGGING) {
     console.log("swdc-tracker test mode on. trackUnstructEvent was called with the following payload: ", event);
   }
-  return event;
+  return success(200, event);
 }
 
 export default swdcTracker;
