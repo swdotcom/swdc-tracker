@@ -7,11 +7,11 @@ export class TrackerResponse {
   error: any = {};
 }
 
-export function success(status = 200): TrackerResponse {
+export function success(status: number = 200): TrackerResponse {
   return buildResponse(status);
 }
 
-export function error(status = 500, message: string = ""): TrackerResponse {
+export function error(status: number = 500, message: string = ""): TrackerResponse {
   return buildResponse(status, message);
 }
 
