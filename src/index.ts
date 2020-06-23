@@ -7,7 +7,7 @@ import { Repo } from "./entities/repo";
 import { File } from "./entities/file";
 import { Plugin } from "./entities/plugin";
 import { success, error, TrackerResponse } from "./utils/response";
-import { getTrackerMode, TrackerMode } from "./utils/env_helper";
+import { isTestMode } from "./utils/env_helper";
 
 const snowplow = require("snowplow-tracker");
 
@@ -26,11 +26,12 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
 
-    if (getTrackerMode() === TrackerMode.PROD) {
-      console.log(`swdc-tracker initialized and ready to send events to ${tracker_api_host}`)
+    if (isTestMode()) {
+      console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events');
     } else {
-      console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events')
+      console.log(`swdc-tracker initialized and ready to send events to ${tracker_api_host}`);
     }
+
     return success();
   } catch (e) {
     console.log("swdcTracker failed to initialize", e);
@@ -76,7 +77,7 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
     _pluginPayload
   ]
 
-  if (getTrackerMode() === TrackerMode.TEST) {
+  if (isTestMode()) {
     // test mode - console log the event
     return testEvent(_codetimePayload, contexts)
   }
@@ -120,7 +121,7 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
     _projecPayload
   ]
 
-  if (getTrackerMode() === TrackerMode.TEST) {
+  if (isTestMode()) {
     // test mode - console log the event
     return testEvent(_editorActionPayload, contexts)
   }

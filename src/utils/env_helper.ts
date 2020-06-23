@@ -11,3 +11,7 @@ export function getTrackerMode(): TrackerMode {
   }
   return TrackerMode.TEST
 }
+
+export function isTestMode(): boolean {
+  return getTrackerMode() === TrackerMode.TEST ? true : false;
+}
