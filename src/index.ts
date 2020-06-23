@@ -15,6 +15,8 @@ const emitter = snowplow.emitter;
 const tracker = snowplow.tracker;
 const swdcTracker = <any>{};
 
+let lastProcessedTestEvent: any = {};
+
 swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string): Promise<TrackerResponse> => {
   try {
     // fetch tracker_api from plugin config 
@@ -34,7 +36,6 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
     return success();
   } catch (e) {
-    console.log("swdcTracker failed to initialize", e);
     return error(500, `Failed to initialize. ${e.message}`);
   }
 };
@@ -75,11 +76,11 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
     _repoPayload,
     _filePayload,
     _pluginPayload
-  ]
+  ];
 
   if (isTestMode()) {
     // test mode - console log the event
-    return testEvent(_codetimePayload, contexts)
+    return testEvent(_codetimePayload, contexts);
   }
 
   // track the event.
@@ -119,11 +120,11 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
     _pluginPayload,
     _filePayload,
     _projecPayload
-  ]
+  ];
 
   if (isTestMode()) {
     // test mode - console log the event
-    return testEvent(_editorActionPayload, contexts)
+    return testEvent(_editorActionPayload, contexts);
   }
 
   // track the event.
@@ -138,10 +139,13 @@ function testEvent(properties: any, contexts: any): TrackerResponse {
     contexts: contexts
   };
 
-  if (!process.env.DISABLE_SWDC_TRACKER_LOGGING) {
-    console.log("swdc-tracker test mode on. trackUnstructEvent was called with the following payload: ", event);
-  }
-  return success(200, event);
+  lastProcessedTestEvent = event;
+
+  return success();
+}
+
+swdcTracker.getLastProcessedTestEvent = (): any => {
+  return lastProcessedTestEvent;
 }
 
 export default swdcTracker;

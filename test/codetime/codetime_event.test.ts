@@ -47,10 +47,11 @@ describe("Test codetime event functions", function () {
 
     expect(response.status).to.equal(200);
 
+    const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
+
     // get the data
-    const payloadData = response.data;
-    const props = payloadData.properties;
-    const contexts = payloadData.contexts;
+    const props = lastProcessedTestEvent.properties;
+    const contexts = lastProcessedTestEvent.contexts;
     expect(props.schema).to.include("codetime");
     expect(props.data.keystrokes).to.equal(20);
 

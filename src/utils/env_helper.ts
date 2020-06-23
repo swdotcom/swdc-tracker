@@ -1,5 +1,3 @@
-
-
 export enum TrackerMode {
   TEST = "test",
   PROD = "prod",

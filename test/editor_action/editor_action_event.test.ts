@@ -41,10 +41,11 @@ describe("Test editor action event functions", function () {
 
     expect(response.status).to.equal(200);
 
+    const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
+
     // get the data
-    const payloadData = response.data;
-    const props = payloadData.properties;
-    const contexts = payloadData.contexts;
+    const props = lastProcessedTestEvent.properties;
+    const contexts = lastProcessedTestEvent.contexts;
     expect(props.schema).to.include("editor_action");
     expect(props.data.type).to.equal("mouse");
 
