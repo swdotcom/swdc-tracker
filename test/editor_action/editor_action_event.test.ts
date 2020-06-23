@@ -1,4 +1,5 @@
 import swdcTracker from "../../src/index";
+import { TrackerResponse } from "../../src/utils/response";
 
 const http = require("../../src/utils/http");
 const expect = require("chai").expect;
@@ -36,10 +37,15 @@ describe("Test editor action event functions", function () {
       plugin_name: "code-time",
       plugin_version: "2.1.20",
     };
-    const payloadData = await swdcTracker.trackEditorAction(eventData);
+    const response: TrackerResponse = await swdcTracker.trackEditorAction(eventData);
 
-    const props = payloadData.properties;
-    const contexts = payloadData.contexts;
+    expect(response.status).to.equal(200);
+
+    const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
+
+    // get the data
+    const props = lastProcessedTestEvent.properties;
+    const contexts = lastProcessedTestEvent.contexts;
     expect(props.schema).to.include("editor_action");
     expect(props.data.type).to.equal("mouse");
 

@@ -1,6 +1,6 @@
 {
   "name": "swdc-tracker",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "swdc event tracker",
   "main": "dist",
   "types": "dist/index.d.js",
@@ -11,7 +11,7 @@
   "scripts": {
     "build": "tsc",
     "prepare": "yarn build",
-    "test": "yarn build && env DISABLE_SWDC_TRACKER_LOGGING=true mocha -r ts-node/register test/**/*.ts --reporter spec --timeout 20000 --exit"
+    "test": "yarn build && mocha -r ts-node/register test/**/*.ts --reporter spec --timeout 20000 --exit"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
