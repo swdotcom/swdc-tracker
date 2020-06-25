@@ -42,6 +42,10 @@ export class CodeTime implements CodeTimeInterface {
     this.tz_offset_minutes = data.tz_offset_minutes;
   }
 
+  hasData() {
+    return this.keystrokes ? true : false;
+  }
+
   buildPayload() {
 
     return {

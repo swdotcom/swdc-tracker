@@ -24,6 +24,10 @@ export class Repo implements RepoInterface {
     this.git_tag = data.git_tag;
   }
 
+  hasData() {
+    return this.repo_identifier ? true : false;
+  }
+
   async buildPayload() {
 
     const hashedName = await hashValue(this.repo_name);

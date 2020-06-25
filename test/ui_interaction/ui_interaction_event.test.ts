@@ -5,7 +5,7 @@ const http = require("../../src/utils/http");
 const expect = require("chai").expect;
 const sinon = require("sinon");
 
-describe("Test codetime event functions", function () {
+describe("Test ui interaction event functions", function () {
 
   const sandbox = sinon.createSandbox();
 
@@ -18,32 +18,25 @@ describe("Test codetime event functions", function () {
         }
       }
     });
-    await swdcTracker.initialize("api.software.com", "codetime", "swdotcom-vscode");
+    await swdcTracker.initialize("api.software.com", "editor_action", "swdotcom-vscode");
   });
 
   after(() => {
     sandbox.restore();
   });
 
-  it("Validate creating a codetime payload", async function () {
+  it("Validate creating a UI interaction payload", async function () {
     const eventData = {
       jwt: "JWT 123",
-      keystrokes: 20,
-      chars_added: 10,
-      chars_deleted: 10,
-      pastes: 0,
-      lines_added: 0,
-      lines_deleted: 0,
-      start_time: 1,
-      end_time: 2,
+      interaction_type: "execute_command",
+      element_name: "tree_view_summary_button",
+      element_location: "tree",
       tz_offset_minutes: 420,
-      plugin_id: 4,
+      plugin_id: 2,
       plugin_name: "code-time",
       plugin_version: "2.1.20",
-      project_name: "foo",
-      project_directory: "baz"
     };
-    const response: TrackerResponse = await swdcTracker.trackCodeTimeEvent(eventData);
+    const response: TrackerResponse = await swdcTracker.trackUIInteraction(eventData);
 
     expect(response.status).to.equal(200);
 
@@ -53,12 +46,12 @@ describe("Test codetime event functions", function () {
     const props = lastProcessedTestEvent.properties;
     const contexts = lastProcessedTestEvent.contexts;
 
-    // SCHEMA validation "codetime"
-    expect(props.schema).to.include("codetime");
-    expect(props.data.keystrokes).to.equal(20);
+    // SCHEMA validation "ui_interaction"
+    expect(props.schema).to.include("ui_interaction");
+    expect(props.data.interaction_type).to.equal("execute_command");
 
     // get the plugin context
     const pluginContext: any = contexts.find((n: any) => n.schema.includes("plugin"));
-    expect(pluginContext.data.plugin_id).to.equal(4);
+    expect(pluginContext.data.plugin_id).to.equal(2);
   })
 });

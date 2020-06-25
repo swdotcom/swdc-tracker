@@ -20,6 +20,10 @@ export class EditorAction implements EditorActionInterface {
     this.tz_offset_minutes = data.tz_offset_minutes;
   }
 
+  hasData() {
+    return this.entity ? true : false;
+  }
+
   buildPayload() {
     return {
       schema: "iglu:com.software/editor_action/jsonschema/1-0-0",

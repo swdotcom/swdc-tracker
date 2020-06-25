@@ -46,6 +46,8 @@ describe("Test editor action event functions", function () {
     // get the data
     const props = lastProcessedTestEvent.properties;
     const contexts = lastProcessedTestEvent.contexts;
+
+    // SCHEMA validation "editor_action"
     expect(props.schema).to.include("editor_action");
     expect(props.data.type).to.equal("mouse");
 

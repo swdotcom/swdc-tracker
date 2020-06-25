@@ -16,6 +16,10 @@ export class Plugin implements PluginInterface {
     this.plugin_name = data.plugin_name;
   }
 
+  hasData() {
+    return this.plugin_id && this.plugin_version ? true : false;
+  }
+
   buildPayload() {
     return {
       schema: "iglu:com.software/plugin/jsonschema/1-0-1",

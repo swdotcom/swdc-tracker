@@ -24,6 +24,10 @@ export class File implements FileInterface {
     this.character_count = data.character_count;
   }
 
+  hasData() {
+    return this.file_name && this.file_path ? true : false;
+  }
+
   async buildPayload() {
 
     const hashedName = await hashValue(this.file_name);

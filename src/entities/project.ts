@@ -15,6 +15,10 @@ export class Project implements ProjectInterface {
     this.project_directory = data.project_directory;
   }
 
+  hasData() {
+    return this.project_name && this.project_directory ? true : false;
+  }
+
   async buildPayload() {
 
     const hashedName = await hashValue(this.project_name);
