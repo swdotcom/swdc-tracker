@@ -52,6 +52,8 @@ describe("Test codetime event functions", function () {
     // get the data
     const props = lastProcessedTestEvent.properties;
     const contexts = lastProcessedTestEvent.contexts;
+
+    // SCHEMA validation "codetime"
     expect(props.schema).to.include("codetime");
     expect(props.data.keystrokes).to.equal(20);
 

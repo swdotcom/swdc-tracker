@@ -1,13 +1,10 @@
 import { get } from "./utils/http";
 import { CodeTimeParams, CodeTime } from "./events/codetime";
 import { EditorActionParams, EditorAction } from "./events/editor_action";
-import { Auth } from "./entities/auth";
-import { Project } from "./entities/project";
-import { Repo } from "./entities/repo";
-import { File } from "./entities/file";
-import { Plugin } from "./entities/plugin";
 import { success, error, TrackerResponse } from "./utils/response";
 import { isTestMode } from "./utils/env_helper";
+import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
+import { buildContexts } from "./utils/context_helper";
 
 const snowplow = require("snowplow-tracker");
 
@@ -46,47 +43,11 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
  */
 swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> => {
 
-  // build the strict types
-  // code time
-  const codetime: CodeTime = new CodeTime(params);
-  // project
-  const project: Project = new Project(params);
-  // repo
-  const repo: Repo = new Repo(params);
-  // file
-  const file: File = new File(params);
-  // plugin
-  const plugin: Plugin = new Plugin(params);
-  // auth
-  const auth: Auth = new Auth(params);
+  // build the contexts and event payload
+  const _codetimePayload: any = await new CodeTime(params).buildPayload();
+  const contexts: any = await buildContexts(params);
 
-  // create the payloads
-  const _codetimePayload = await codetime.buildPayload();
-  const _projecPayload = await project.buildPayload();
-  const _repoPayload = await repo.buildPayload();
-  const _filePayload = await file.buildPayload();
-  const _pluginPayload = await plugin.buildPayload();
-  const _authPayload = await auth.buildPayload();
-
-  // crate the context with the authorization info
-  const contexts = [
-    _authPayload,
-    _codetimePayload,
-    _projecPayload,
-    _repoPayload,
-    _filePayload,
-    _pluginPayload
-  ];
-
-  if (isTestMode()) {
-    // test mode - console log the event
-    return testEvent(_codetimePayload, contexts);
-  }
-
-  // track the event.
-  // trackUnstrucEvent returns...
-  // {add <func(key, val)>, addDict <func(dict)>, addJson <func(keyIfEncoded, keyIfNotEncoded, json)>, build <func()>}
-  return await swdcTracker.spTracker.trackUnstructEvent(_codetimePayload, contexts);
+  return await sendEvent(_codetimePayload, contexts);
 }
 
 /**
@@ -95,42 +56,40 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
  */
 swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any> => {
 
-  // build the strict types
-  const editorAction: EditorAction = new EditorAction(params);
-  // plugin
-  const plugin: Plugin = new Plugin(params);
-  // file
-  const file: File = new File(params);
-  // project
-  const project: Project = new Project(params);
-  // auth
-  const auth: Auth = new Auth(params);
+  // build the contexts and event payload
+  const _editorActionPayload: any = await new EditorAction(params).buildPayload();
+  const contexts: any = await buildContexts(params);
 
-  // create the payload
-  const _editorActionPayload = await editorAction.buildPayload();
-  const _projecPayload = await project.buildPayload();
-  const _filePayload = await file.buildPayload();
-  const _pluginPayload = await plugin.buildPayload();
-  const _authPayload = await auth.buildPayload();
+  return await sendEvent(_editorActionPayload, contexts);
+}
 
-  // crate the context with the authorization info
-  const contexts = [
-    _authPayload,
-    _editorActionPayload,
-    _pluginPayload,
-    _filePayload,
-    _projecPayload
-  ];
+/**
+ * @param jwt - the authorization token
+ * @param params - the UI Interaction params
+ */
+swdcTracker.trackUIInteraction = async (params: UIInteractionParams): Promise<any> => {
 
+  // build the contexts and event payload
+  const _uiInteractionPayload: any = await new UIInteraction(params).buildPayload();
+  const contexts: any = await buildContexts(params);
+
+  return await sendEvent(_uiInteractionPayload, contexts);
+}
+
+async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResponse> {
   if (isTestMode()) {
     // test mode - console log the event
-    return testEvent(_editorActionPayload, contexts);
+    return testEvent(event_payload, contexts);
   }
 
-  // track the event.
-  // trackUnstrucEvent returns...
+  // trackUnstrucEvent returns a PayloadData type:
   // {add <func(key, val)>, addDict <func(dict)>, addJson <func(keyIfEncoded, keyIfNotEncoded, json)>, build <func()>}
-  return await swdcTracker.spTracker.trackUnstructEvent(_editorActionPayload, contexts);
+  const eventResult: any = await swdcTracker.spTracker.trackUnstructEvent(event_payload, contexts);
+
+  if (eventResult && eventResult.add) {
+    return success();
+  }
+  return error();
 }
 
 function testEvent(properties: any, contexts: any): TrackerResponse {

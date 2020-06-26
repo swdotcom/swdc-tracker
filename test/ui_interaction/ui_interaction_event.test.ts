@@ -1,11 +1,13 @@
 import swdcTracker from "../../src/index";
 import { TrackerResponse } from "../../src/utils/response";
+import { FileInterface, File } from "../../src/entities/file";
+import { CodeTime } from "../../src/events/codetime";
 
 const http = require("../../src/utils/http");
 const expect = require("chai").expect;
 const sinon = require("sinon");
 
-describe("Test editor action event functions", function () {
+describe("Test ui interaction event functions", function () {
 
   const sandbox = sinon.createSandbox();
 
@@ -25,19 +27,19 @@ describe("Test editor action event functions", function () {
     sandbox.restore();
   });
 
-  it("Validate creating a editor action payload", async function () {
+  it("Validate creating a UI interaction payload", async function () {
     const eventData = {
       jwt: "JWT 123",
-      entity: "editor",
-      type: "mouse",
-      name: "click",
-      description: "TreeViewExpand",
+      interaction_type: "execute_command",
+      element_name: "tree_view_summary_button",
+      element_location: "tree",
       tz_offset_minutes: 420,
       plugin_id: 2,
       plugin_name: "code-time",
       plugin_version: "2.1.20",
     };
-    const response: TrackerResponse = await swdcTracker.trackEditorAction(eventData);
+
+    const response: TrackerResponse = await swdcTracker.trackUIInteraction(eventData);
 
     expect(response.status).to.equal(200);
 
@@ -47,12 +49,29 @@ describe("Test editor action event functions", function () {
     const props = lastProcessedTestEvent.properties;
     const contexts = lastProcessedTestEvent.contexts;
 
-    // SCHEMA validation "editor_action"
-    expect(props.schema).to.include("editor_action");
-    expect(props.data.type).to.equal("mouse");
+    // SCHEMA validation "ui_interaction"
+    expect(props.schema).to.include("ui_interaction");
+    expect(props.data.interaction_type).to.equal("execute_command");
 
     // get the plugin context
     const pluginContext: any = contexts.find((n: any) => n.schema.includes("plugin"));
     expect(pluginContext.data.plugin_id).to.equal(2);
-  })
+  });
+
+  it("Validate not creating a codetime payload for the ui interaction payload", async function () {
+    const eventData: any = {
+      jwt: "JWT 123",
+      interaction_type: "execute_command",
+      element_name: "tree_view_summary_button",
+      element_location: "tree",
+      tz_offset_minutes: 420,
+      plugin_id: 2,
+      plugin_name: "code-time",
+      plugin_version: "2.1.20",
+    };
+
+    // needs to have start and end time
+    expect(CodeTime.hasData(eventData)).to.be.undefined;
+
+  });
 });

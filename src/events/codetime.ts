@@ -2,6 +2,7 @@ import { RepoInterface } from "../entities/repo";
 import { ProjectInterface } from "../entities/project";
 import { FileInterface } from "../entities/file";
 import { PluginInterface } from "../entities/plugin";
+import { AuthInterface } from "../entities/auth";
 
 // The CodeTime event
 export interface CodeTimeInterface {
@@ -42,6 +43,10 @@ export class CodeTime implements CodeTimeInterface {
     this.tz_offset_minutes = data.tz_offset_minutes;
   }
 
+  static hasData(data: CodeTimeInterface) {
+    return data.start_time && data.start_time;
+  }
+
   buildPayload() {
 
     return {
@@ -62,6 +67,5 @@ export class CodeTime implements CodeTimeInterface {
   }
 }
 
-export interface CodeTimeParams extends PluginInterface, RepoInterface, ProjectInterface, FileInterface, CodeTimeInterface {
-  jwt: string
-}
+export interface CodeTimeParams extends
+  AuthInterface, PluginInterface, RepoInterface, ProjectInterface, FileInterface, CodeTimeInterface { }
