@@ -15,8 +15,8 @@ export class Project implements ProjectInterface {
     this.project_directory = data.project_directory;
   }
 
-  hasData() {
-    return this.project_name && this.project_directory ? true : false;
+  static hasData(data: ProjectInterface) {
+    return data.project_name && data.project_directory;
   }
 
   async buildPayload() {

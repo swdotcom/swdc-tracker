@@ -24,8 +24,8 @@ export class File implements FileInterface {
     this.character_count = data.character_count;
   }
 
-  hasData() {
-    return this.file_name && this.file_path ? true : false;
+  static hasData(data: FileInterface) {
+    return data.file_name && data.file_path;
   }
 
   async buildPayload() {

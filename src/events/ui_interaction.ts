@@ -1,5 +1,6 @@
 import { UIElementInterface } from "../entities/ui_element";
 import { PluginInterface } from "../entities/plugin";
+import { AuthInterface } from "../entities/auth";
 
 // The UI Interaction event
 export interface UIInteractionInterface {
@@ -13,8 +14,8 @@ export class UIInteraction implements UIInteractionInterface {
     this.interaction_type = data.interaction_type;
   }
 
-  hasData() {
-    return this.interaction_type ? true : false;
+  static hasData(data: UIInteractionInterface) {
+    return data.interaction_type;
   }
 
   buildPayload() {
@@ -27,6 +28,5 @@ export class UIInteraction implements UIInteractionInterface {
   }
 }
 
-export interface UIInteractionParams extends PluginInterface, UIElementInterface, UIInteractionInterface {
-  jwt: string
-}
+export interface UIInteractionParams extends
+  AuthInterface, PluginInterface, UIElementInterface, UIInteractionInterface { }

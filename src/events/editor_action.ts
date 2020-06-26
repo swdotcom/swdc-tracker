@@ -1,6 +1,7 @@
 import { PluginInterface } from "../entities/plugin";
 import { FileInterface } from "../entities/file";
 import { ProjectInterface } from "../entities/project";
+import { AuthInterface } from "../entities/auth";
 
 // The EditorAction event
 export interface EditorActionInterface {
@@ -20,8 +21,8 @@ export class EditorAction implements EditorActionInterface {
     this.tz_offset_minutes = data.tz_offset_minutes;
   }
 
-  hasData() {
-    return this.entity ? true : false;
+  static hasData(data: EditorActionInterface) {
+    return data.entity;
   }
 
   buildPayload() {
@@ -36,6 +37,5 @@ export class EditorAction implements EditorActionInterface {
   }
 }
 
-export interface EditorActionParams extends PluginInterface, FileInterface, ProjectInterface, EditorActionInterface {
-  jwt: string
-}
+export interface EditorActionParams extends
+  AuthInterface, PluginInterface, FileInterface, ProjectInterface, EditorActionInterface { }

@@ -47,15 +47,7 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
   const _codetimePayload: any = await new CodeTime(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  if (isTestMode()) {
-    // test mode - console log the event
-    return testEvent(_codetimePayload, contexts);
-  }
-
-  // track the event.
-  // trackUnstrucEvent returns...
-  // {add <func(key, val)>, addDict <func(dict)>, addJson <func(keyIfEncoded, keyIfNotEncoded, json)>, build <func()>}
-  return await swdcTracker.spTracker.trackUnstructEvent(_codetimePayload, contexts);
+  return await sendEvent(_codetimePayload, contexts);
 }
 
 /**
@@ -68,15 +60,7 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
   const _editorActionPayload: any = await new EditorAction(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  if (isTestMode()) {
-    // test mode - console log the event
-    return testEvent(_editorActionPayload, contexts);
-  }
-
-  // track the event.
-  // trackUnstrucEvent returns...
-  // {add <func(key, val)>, addDict <func(dict)>, addJson <func(keyIfEncoded, keyIfNotEncoded, json)>, build <func()>}
-  return await swdcTracker.spTracker.trackUnstructEvent(_editorActionPayload, contexts);
+  return await sendEvent(_editorActionPayload, contexts);
 }
 
 /**
@@ -89,16 +73,23 @@ swdcTracker.trackUIInteraction = async (params: UIInteractionParams): Promise<an
   const _uiInteractionPayload: any = await new UIInteraction(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
+  return await sendEvent(_uiInteractionPayload, contexts);
+}
 
+async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResponse> {
   if (isTestMode()) {
     // test mode - console log the event
-    return testEvent(_uiInteractionPayload, contexts);
+    return testEvent(event_payload, contexts);
   }
 
-  // track the event.
-  // trackUnstrucEvent returns...
+  // trackUnstrucEvent returns a PayloadData type:
   // {add <func(key, val)>, addDict <func(dict)>, addJson <func(keyIfEncoded, keyIfNotEncoded, json)>, build <func()>}
-  return await swdcTracker.spTracker.trackUnstructEvent(_uiInteractionPayload, contexts);
+  const eventResult: any = await swdcTracker.spTracker.trackUnstructEvent(event_payload, contexts);
+
+  if (eventResult && eventResult.add) {
+    return success();
+  }
+  return error();
 }
 
 function testEvent(properties: any, contexts: any): TrackerResponse {

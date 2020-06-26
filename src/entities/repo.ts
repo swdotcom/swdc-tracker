@@ -24,8 +24,8 @@ export class Repo implements RepoInterface {
     this.git_tag = data.git_tag;
   }
 
-  hasData() {
-    return this.repo_identifier ? true : false;
+  static hasData(data: RepoInterface) {
+    return data.repo_identifier;
   }
 
   async buildPayload() {

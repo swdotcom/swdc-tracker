@@ -22,8 +22,8 @@ export class UIElement implements UIElementInterface {
     this.cta_text = data.cta_text;
   }
 
-  hasData() {
-    return this.element_name && this.element_location ? true : false;
+  static hasData(data: UIElementInterface) {
+    return data.element_name && data.element_location;
   }
 
   async buildPayload() {

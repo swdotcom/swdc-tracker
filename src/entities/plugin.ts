@@ -16,8 +16,8 @@ export class Plugin implements PluginInterface {
     this.plugin_name = data.plugin_name;
   }
 
-  hasData() {
-    return this.plugin_id && this.plugin_version ? true : false;
+  static hasData(data: PluginInterface) {
+    return data.plugin_id && data.plugin_version;
   }
 
   buildPayload() {
