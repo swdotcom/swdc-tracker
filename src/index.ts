@@ -16,7 +16,7 @@ let lastProcessedTestEvent: any = {};
 
 swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string): Promise<TrackerResponse> => {
   try {
-    // fetch tracker_api from plugin config 
+    // fetch tracker_api from plugin config
     const result = await get(swdcApiHost, "/plugins/config")
     const tracker_api_host = result.data.tracker_api
 
@@ -39,7 +39,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
 /**
  * @param jwt - the authorization token
- * @param codetimeEvent - the CodeTime event extends Repo, Project, File 
+ * @param codetimeEvent - the CodeTime event extends Repo, Project, File
  */
 swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> => {
 
@@ -108,3 +108,12 @@ swdcTracker.getLastProcessedTestEvent = (): any => {
 }
 
 export default swdcTracker;
+export * from "./events/codetime";
+export * from "./events/editor_action";
+export * from "./events/ui_interaction";
+export * from "./entities/auth";
+export * from "./entities/file";
+export * from "./entities/plugin";
+export * from "./entities/project";
+export * from "./entities/repo";
+export * from "./entities/ui_element";
