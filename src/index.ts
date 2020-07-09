@@ -21,9 +21,10 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     const tracker_api_host = result.data.tracker_api
 
     // initialize snowplow tracker
-    const e = emitter(tracker_api_host)
+    const e = emitter(tracker_api_host, 'https', null, 'post', 0)
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
+    swdcTracker.spTracker.setPlatform('iot');
 
     if (isTestMode()) {
       console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events');
