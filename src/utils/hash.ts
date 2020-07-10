@@ -1,17 +1,9 @@
-const _sodium = require('libsodium-wrappers');
+const blake3 = require('blake3');
 
-let sodium: any;
-
-export async function hashValue(value: string) {
+export function hashValue(value: string) {
   if (!value) {
     return value;
   }
 
-  if (sodium === undefined) {
-    await _sodium.ready;
-    sodium = _sodium
-  }
-
-  const result = sodium.crypto_generichash(64, value);
-  return sodium.to_hex(result);
+  return blake3.hash(value, { length: 64 }).toString('hex');
 }

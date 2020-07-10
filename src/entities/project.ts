@@ -19,10 +19,10 @@ export class Project implements ProjectInterface {
     return data.project_name && data.project_directory;
   }
 
-  async buildPayload() {
+  buildPayload() {
 
-    const hashedName = await hashValue(this.project_name);
-    const hashedDirectory = await hashValue(this.project_directory);
+    const hashedName = hashValue(this.project_name);
+    const hashedDirectory = hashValue(this.project_directory);
 
     return {
       schema: "iglu:com.software/project/jsonschema/1-0-0",

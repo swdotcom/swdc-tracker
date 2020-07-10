@@ -45,8 +45,8 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> => {
 
   // build the contexts and event payload
-  const _codetimePayload: any = await new CodeTime(params).buildPayload();
-  const contexts: any = await buildContexts(params);
+  const _codetimePayload: any = new CodeTime(params).buildPayload();
+  const contexts: any = buildContexts(params);
 
   return await sendEvent(_codetimePayload, contexts);
 }
@@ -58,8 +58,8 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
 swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any> => {
 
   // build the contexts and event payload
-  const _editorActionPayload: any = await new EditorAction(params).buildPayload();
-  const contexts: any = await buildContexts(params);
+  const _editorActionPayload: any = new EditorAction(params).buildPayload();
+  const contexts: any = buildContexts(params);
 
   return await sendEvent(_editorActionPayload, contexts);
 }
@@ -71,8 +71,8 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
 swdcTracker.trackUIInteraction = async (params: UIInteractionParams): Promise<any> => {
 
   // build the contexts and event payload
-  const _uiInteractionPayload: any = await new UIInteraction(params).buildPayload();
-  const contexts: any = await buildContexts(params);
+  const _uiInteractionPayload: any = new UIInteraction(params).buildPayload();
+  const contexts: any = buildContexts(params);
 
   return await sendEvent(_uiInteractionPayload, contexts);
 }

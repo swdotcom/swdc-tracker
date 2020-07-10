@@ -28,13 +28,13 @@ export class Repo implements RepoInterface {
     return data.repo_identifier;
   }
 
-  async buildPayload() {
+  buildPayload() {
 
-    const hashedName = await hashValue(this.repo_name);
-    const hashedIdentifier = await hashValue(this.repo_identifier);
-    const hashedOwnerId = await hashValue(this.owner_id);
-    const hashedGitBranch = await hashValue(this.git_branch);
-    const hashedGitTag = await hashValue(this.git_tag);
+    const hashedName = hashValue(this.repo_name);
+    const hashedIdentifier = hashValue(this.repo_identifier);
+    const hashedOwnerId = hashValue(this.owner_id);
+    const hashedGitBranch = hashValue(this.git_branch);
+    const hashedGitTag = hashValue(this.git_tag);
 
     return {
       schema: "iglu:com.software/repo/jsonschema/1-0-0",
