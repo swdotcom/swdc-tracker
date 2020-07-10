@@ -2,6 +2,7 @@ import { get } from "./utils/http";
 import { CodeTimeParams, CodeTime } from "./events/codetime";
 import { EditorActionParams, EditorAction } from "./events/editor_action";
 import { success, error, TrackerResponse } from "./utils/response";
+import { isTestMode } from "./utils/env_helper";
 import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
 import { buildContexts } from "./utils/context_helper";
 
@@ -25,7 +26,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
     swdcTracker.spTracker.setPlatform('iot');
 
-    if (process.env.ENABLE_SWDC_TRACKER === "true") {
+    if (isTestMode()) {
       console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events');
     } else {
       console.log(`swdc-tracker initialized and ready to send events to ${tracker_api_host}`);
@@ -77,7 +78,7 @@ swdcTracker.trackUIInteraction = async (params: UIInteractionParams): Promise<an
 }
 
 async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResponse> {
-  if (process.env.ENABLE_SWDC_TRACKER === "true") {
+  if (isTestMode()) {
     // test mode - console log the event
     return testEvent(event_payload, contexts);
   }
