@@ -1,6 +1,6 @@
 {
   "name": "swdc-tracker",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "swdc event tracker",
   "main": "dist",
   "types": "dist/index.d.js",
