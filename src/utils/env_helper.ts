@@ -4,10 +4,10 @@ export enum TrackerMode {
 }
 
 export function getTrackerMode(): TrackerMode {
-  if (process.env.ENABLE_SWDC_TRACKER === "true") {
-    return TrackerMode.PROD;
+  if (process.env.NODE_ENV == "test") {
+    return TrackerMode.TEST
   }
-  return TrackerMode.TEST
+  return TrackerMode.PROD;
 }
 
 export function isTestMode(): boolean {
