@@ -11,7 +11,7 @@
   "scripts": {
     "build": "tsc",
     "prepare": "yarn build",
-    "test": "yarn build && mocha -r ts-node/register test/**/*.ts --reporter spec --timeout 20000 --exit"
+    "test": "export NODE_ENV=test yarn build && mocha -r ts-node/register test/**/*.ts --reporter spec --timeout 20000 --exit"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
