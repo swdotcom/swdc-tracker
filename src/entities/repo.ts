@@ -40,7 +40,7 @@ export class Repo implements RepoInterface {
       schema: "iglu:com.software/repo/jsonschema/1-0-0",
       data: {
         repo_identifier: hashedIdentifier,
-        reop_name: hashedName,
+        repo_name: hashedName,
         owner_id: hashedOwnerId,
         git_branch: hashedGitBranch,
         git_tag: hashedGitTag
