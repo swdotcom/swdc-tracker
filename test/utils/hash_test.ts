@@ -22,4 +22,47 @@ describe("Hash Utility", function () {
     });
   });
 
+  context("when the sodium library is not initialized", async function () {
+    it("calls _sodium.ready", async function () {
+
+    });
+
+    it("GETs the users hashedValues", async function () {
+
+    });
+
+    it("sets the userHashedValues object", async function () {
+
+    });
+  });
+
+  context("when the user does not have this hashedValue stored yet", async function () {
+    let userHashedValues = {
+      "file_name": ["asdfasdfsda", "fasdfsda", "asdfasdfsdew"],
+      "project_name": ["bbaljbl", "fjsfiejwil", "faksdjfjsad"]
+    };
+    let string_param = "secret_message";
+
+    it("POSTs the original and hashedValue to /user_encrypted_data", async function () {
+
+    });
+
+    it("GETs the updated hashedValue list for the user", async function () {
+    });
+  });
+
+  context("when the user DOES have this hashedValue stored", async function () {
+    let userHashedValues = {
+      "file_name": ["asdfasdfsda", "fasdfsda", "asdfasdfsdew"],
+      "project_name": ["bbaljbl", "fjsfiejwil", "faksdjfjsad"]
+    };
+    let string_param = "secret_message";
+
+    it("does not POST the original and hashedValue to /user_encrypted_data", async function () {
+
+    });
+
+    it("does not GET the updated hashedValue list for the user", async function () {
+    });
+  });
 });

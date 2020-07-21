@@ -28,10 +28,10 @@ export class File implements FileInterface {
     return data.file_name && data.file_path;
   }
 
-  async buildPayload() {
+  async buildPayload(jwt?: string) {
 
-    const hashedName = await hashValue(this.file_name);
-    const hashedPath = await hashValue(this.file_path);
+    const hashedName = await hashValue(this.file_name, "file_name", jwt);
+    const hashedPath = await hashValue(this.file_path, "file_path", jwt);
 
     return {
       schema: "iglu:com.software/file/jsonschema/1-0-1",
