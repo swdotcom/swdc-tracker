@@ -11,24 +11,31 @@ export async function hashValue(value: string, dataType: string, jwt: string) {
   }
 
   if (sodium === undefined) {
-    Promise.all([setUserHashedValues(jwt), _sodium.ready]).then(() => {
+    await Promise.all([setUserHashedValues(jwt), _sodium.ready]).then(() => {
       sodium = _sodium;
     });
   }
 
   const hashedValue = sodium.to_hex(sodium.crypto_generichash(64, value));
 
-  if (!userHashedValues[dataType].contains(hashedValue)) {
+  const hashValueAlreadyExists = !!userHashedValues[dataType] && userHashedValues[dataType].includes(hashedValue);
+
+  if (!hashValueAlreadyExists) {
     await encryptValue(value, hashedValue, dataType, jwt);
-    // Should we await on this or let it run async?
     setUserHashedValues(jwt);
   }
 
-  return hashedValue
+  return hashedValue;
 }
 
 async function encryptValue(value: string, hashedValue: string, dataType: string, jwt: string) {
-  post("/encypted_user_data", { "value": value, "hashedValue": hashedValue, data_type: dataType }, jwt);
+  const params = {
+    value: value,
+    hashed_value: hashedValue,
+    data_type: dataType
+  }
+
+  post("/encrypted_user_data", params, jwt);
 }
 
 async function setUserHashedValues(jwt: string) {

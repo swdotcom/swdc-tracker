@@ -42,8 +42,8 @@ export async function buildContexts(params: any) {
 
   // project
   if (Project.hasData(params)) {
-    const _projecPayload = await new Project(params).buildPayload(params.jwt);
-    contexts.push(_projecPayload);
+    const _projectPayload = await new Project(params).buildPayload(params.jwt);
+    contexts.push(_projectPayload);
   }
 
   // repo

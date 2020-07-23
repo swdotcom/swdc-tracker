@@ -28,7 +28,7 @@ export class Repo implements RepoInterface {
     return data.repo_identifier;
   }
 
-  async buildPayload(jwt?: string) {
+  async buildPayload(jwt: string) {
 
     const hashedName = await hashValue(this.repo_name, "repo_name", jwt);
     const hashedIdentifier = await hashValue(this.repo_identifier, "repo_identifier", jwt);

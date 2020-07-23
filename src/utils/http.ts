@@ -1,8 +1,9 @@
 import axios from "axios";
+
 let baseURL = "";
 
-export function setBaseUrl(baseURL: string) {
-  baseURL = baseURL;
+export function setBaseUrl(url: string) {
+  baseURL = url;
 }
 
 export async function get(endpoint: string, jwt?: string) {
