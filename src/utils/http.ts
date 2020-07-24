@@ -7,7 +7,15 @@ export function setBaseUrl(url: string) {
 }
 
 export async function get(endpoint: string, jwt?: string) {
-  const api = axios.create({ baseURL: baseURL, headers: { "Authorization": jwt }});
+  let apiParams;
+
+  if(jwt) {
+    apiParams = { baseURL: baseURL, headers: { "Authorization": jwt }}
+  } else {
+    apiParams = { baseURL: baseURL }
+  }
+
+  const api = axios.create(apiParams);
   const result = await api.get(endpoint);
   return result;
 }
