@@ -1,4 +1,4 @@
-import { get } from "./utils/http";
+import { setBaseUrl, get } from "./utils/http";
 import { CodeTimeParams, CodeTime } from "./events/codetime";
 import { EditorActionParams, EditorAction } from "./events/editor_action";
 import { success, error, TrackerResponse } from "./utils/response";
@@ -17,7 +17,8 @@ let lastProcessedTestEvent: any = {};
 swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string): Promise<TrackerResponse> => {
   try {
     // fetch tracker_api from plugin config
-    const result = await get(swdcApiHost, "/plugins/config")
+    setBaseUrl(swdcApiHost);
+    const result = await get("/plugins/config")
     const tracker_api_host = result.data.tracker_api
 
     // initialize snowplow tracker
@@ -25,6 +26,8 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
     swdcTracker.spTracker.setPlatform('iot');
+
+
 
     if (isTestMode()) {
       console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events');
@@ -39,8 +42,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 };
 
 /**
- * @param jwt - the authorization token
- * @param codetimeEvent - the CodeTime event extends Repo, Project, File
+ * @param codetimeEvent - the CodeTime event extends Repo, Project, File, Auth
  */
 swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> => {
 

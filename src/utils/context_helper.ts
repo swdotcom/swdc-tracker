@@ -10,7 +10,7 @@ import { UIElement } from "../entities/ui_element";
 
 /**
  * Build the snowplow payloads based on params available
- * @param params 
+ * @param params
  */
 export async function buildContexts(params: any) {
 
@@ -42,19 +42,19 @@ export async function buildContexts(params: any) {
 
   // project
   if (Project.hasData(params)) {
-    const _projecPayload = await new Project(params).buildPayload();
-    contexts.push(_projecPayload);
+    const _projectPayload = await new Project(params).buildPayload(params.jwt);
+    contexts.push(_projectPayload);
   }
 
   // repo
   if (Repo.hasData(params)) {
-    const _repoPayload = await new Repo(params).buildPayload();
+    const _repoPayload = await new Repo(params).buildPayload(params.jwt);
     contexts.push(_repoPayload);
   }
 
   // file
   if (File.hasData(params)) {
-    const _filePayload = await new File(params).buildPayload();
+    const _filePayload = await new File(params).buildPayload(params.jwt);
     contexts.push(_filePayload);
   }
 

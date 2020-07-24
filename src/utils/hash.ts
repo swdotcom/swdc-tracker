@@ -1,17 +1,43 @@
-const _sodium = require('libsodium-wrappers');
+import { get, post } from "./http";
 
+const _sodium = require('libsodium-wrappers');
 let sodium: any;
 
-export async function hashValue(value: string) {
+let userHashedValues: any;
+
+export async function hashValue(value: string, dataType: string, jwt: string) {
   if (!value) {
     return value;
   }
 
   if (sodium === undefined) {
-    await _sodium.ready;
-    sodium = _sodium
+    await Promise.all([setUserHashedValues(jwt), _sodium.ready]).then(() => {
+      sodium = _sodium;
+    });
   }
 
-  const result = sodium.crypto_generichash(64, value);
-  return sodium.to_hex(result);
+  const hashedValue = sodium.to_hex(sodium.crypto_generichash(64, value));
+
+  const hashValueAlreadyExists = !!userHashedValues[dataType] && userHashedValues[dataType].includes(hashedValue);
+
+  if (!hashValueAlreadyExists) {
+    await encryptValue(value, hashedValue, dataType, jwt);
+    setUserHashedValues(jwt);
+  }
+
+  return hashedValue;
+}
+
+async function encryptValue(value: string, hashedValue: string, dataType: string, jwt: string) {
+  const params = {
+    value: value,
+    hashed_value: hashedValue,
+    data_type: dataType
+  }
+
+  post("/encrypted_user_data", params, jwt);
+}
+
+async function setUserHashedValues(jwt: string) {
+  userHashedValues = await get("/hashed_values", jwt);
 }
