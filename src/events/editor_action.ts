@@ -5,9 +5,9 @@ import { AuthInterface } from "../entities/auth";
 
 // The EditorAction event
 export interface EditorActionInterface {
-  entity: string,
-  type: string,
-  tz_offset_minutes: number
+  entity: string;
+  type: string;
+  tz_offset_minutes: number;
 }
 
 export class EditorAction implements EditorActionInterface {
@@ -27,15 +27,19 @@ export class EditorAction implements EditorActionInterface {
 
   buildPayload() {
     return {
-      schema: "iglu:com.software/editor_action/jsonschema/1-0-0",
+      schema: "iglu:com.software/editor_action/jsonschema/1-0-1",
       data: {
         entity: this.entity,
         type: this.type,
-        tz_offset_minutes: this.tz_offset_minutes
-      }
-    }
+        tz_offset_minutes: this.tz_offset_minutes,
+      },
+    };
   }
 }
 
-export interface EditorActionParams extends
-  AuthInterface, PluginInterface, FileInterface, ProjectInterface, EditorActionInterface { }
+export interface EditorActionParams
+  extends AuthInterface,
+    PluginInterface,
+    FileInterface,
+    ProjectInterface,
+    EditorActionInterface {}
