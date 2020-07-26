@@ -28,7 +28,6 @@
     "libsodium": "^0.7.6",
     "libsodium-wrappers": "^0.7.6",
     "lodash": "^4.17.19",
-    "snowplow-tracker": "^0.3.0",
-    "swdc-vscode": "/Users/xavierluiz/software/swdc-vscode"
+    "snowplow-tracker": "^0.3.0"
   }
 }
