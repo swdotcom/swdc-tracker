@@ -35,7 +35,7 @@ async function encryptValue(value: string, hashedValue: string, dataType: string
     data_type: dataType
   }
 
-  post("/encrypted_user_data", params, jwt);
+  post("/user_encrypted_data", params, jwt);
 }
 
 async function setUserHashedValues(jwt: string) {
