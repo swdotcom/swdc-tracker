@@ -54,7 +54,7 @@ describe("Hash Utility", function () {
       it("encrypts the value", async function() {
         await hashValue(string_param, "test-data-type", "test-jwt");
         expect(http.post.calledWith(
-          "/encrypted_user_data",
+          "/user_encrypted_data",
           {
             value: string_param,
             hashed_value: expectedHashedValue,
