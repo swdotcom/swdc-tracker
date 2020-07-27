@@ -39,5 +39,6 @@ async function encryptValue(value: string, hashedValue: string, dataType: string
 }
 
 async function setUserHashedValues(jwt: string) {
-  userHashedValues = await get("/hashed_values", jwt);
+  const response = await get("/hashed_values", jwt);
+  userHashedValues = response.data;
 }

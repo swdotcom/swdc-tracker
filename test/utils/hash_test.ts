@@ -28,7 +28,7 @@ describe("Hash Utility", function () {
     beforeEach(function() {
       // return any api since we're not really trying to call out
       sandbox.stub(http, "get").callsFake(function () {
-        return userHashedValues
+        return { data: userHashedValues }
       });
 
       sandbox.stub(http, "post").callsFake()
