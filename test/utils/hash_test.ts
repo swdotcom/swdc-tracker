@@ -8,6 +8,36 @@ describe("Hash Utility", function () {
   const sandbox = sinon.createSandbox();
 
 
+  context("when the JWT is not supplied", async function () {
+    beforeEach(function () {
+      // return any api since we're not really trying to call out
+      sandbox.stub(http, "get").callsFake(function () {
+        return { data: {} }
+      });
+
+      sandbox.stub(http, "post").callsFake()
+    });
+
+    afterEach(function () {
+      sandbox.restore();
+    });
+
+    let string_param = "something";
+    it("returns empty string", async function () {
+      expect(await hashValue(string_param, "test-data-type")).to.equal("");
+    });
+
+    it("does NOT encrypt the value", async function () {
+      await hashValue(string_param, "test-data-type")
+      expect(http.post.callCount).to.eq(0)
+    });
+
+    it("does not get hashed_values", async function () {
+      await hashValue(string_param, "test-data-type")
+      expect(http.get.callCount).to.eq(0)
+    });
+  });
+
   context("when the parameter is empty string", async function () {
     let string_param = "";
     it("returns empty string", async function () {

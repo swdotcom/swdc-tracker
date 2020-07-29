@@ -5,7 +5,11 @@ let sodium: any;
 
 let userHashedValues: any;
 
-export async function hashValue(value: string, dataType: string, jwt: string) {
+export async function hashValue(value: string, dataType: string, jwt?: string) {
+  if (!jwt) {
+    return ""
+  }
+
   if (!value) {
     return value;
   }
@@ -28,7 +32,11 @@ export async function hashValue(value: string, dataType: string, jwt: string) {
   return hashedValue;
 }
 
-async function encryptValue(value: string, hashedValue: string, dataType: string, jwt: string) {
+async function encryptValue(value: string, hashedValue: string, dataType: string, jwt?: string) {
+  if (!jwt) {
+    return ""
+  }
+
   const params = {
     value: value,
     hashed_value: hashedValue,

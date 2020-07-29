@@ -15,7 +15,6 @@ export interface CodeTimeInterface {
   lines_deleted: number,
   start_time: number,
   end_time: number,
-  tz_offset_minutes: number
 }
 
 export class CodeTime implements CodeTimeInterface {
@@ -28,7 +27,6 @@ export class CodeTime implements CodeTimeInterface {
   public lines_deleted: number;
   public start_time: number;
   public end_time: number;
-  public tz_offset_minutes: number;
 
   constructor(data: CodeTimeInterface) {
     this.keystrokes = data.keystrokes;
@@ -40,7 +38,6 @@ export class CodeTime implements CodeTimeInterface {
     this.lines_deleted = data.lines_deleted;
     this.start_time = data.start_time;
     this.end_time = data.end_time;
-    this.tz_offset_minutes = data.tz_offset_minutes;
   }
 
   static hasData(data: CodeTimeInterface) {
@@ -53,15 +50,14 @@ export class CodeTime implements CodeTimeInterface {
       schema: "iglu:com.software/codetime/jsonschema/1-0-1",
       data: {
         keystrokes: this.keystrokes,
-        chars_added: this.chars_deleted,
+        chars_added: this.chars_added,
         chars_deleted: this.chars_deleted,
         chars_pasted: this.chars_pasted,
         pastes: this.pastes,
         lines_added: this.lines_added,
         lines_deleted: this.lines_deleted,
         start_time: this.start_time,
-        end_time: this.end_time,
-        tz_offset_minutes: this.tz_offset_minutes
+        end_time: this.end_time
       }
     }
   }
