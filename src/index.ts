@@ -22,11 +22,15 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     const tracker_api_host = result.data.tracker_api
 
     // initialize snowplow tracker
-    const e = emitter(tracker_api_host, 'https', null, 'post', 0)
+    let protocol = "https";
+    if (tracker_api_host.indexOf("http") === 0) {
+      // use in case this is localhost testing
+      protocol = tracker_api_host.substring(0, tracker_api_host.indexOf(":"));
+    }
+    const e = emitter(tracker_api_host, protocol, null, "post", 0)
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
     swdcTracker.spTracker.setPlatform('iot');
-
 
 
     if (isTestMode()) {
@@ -85,14 +89,24 @@ async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResp
     return testEvent(event_payload, contexts);
   }
 
-  // trackUnstrucEvent returns a PayloadData type:
-  // {add <func(key, val)>, addDict <func(dict)>, addJson <func(keyIfEncoded, keyIfNotEncoded, json)>, build <func()>}
-  const eventResult: any = await swdcTracker.spTracker.trackUnstructEvent(event_payload, contexts);
-
-  if (eventResult && eventResult.add) {
-    return success();
+  try {
+    /**
+     * trackUnstructEvent takes the following:
+     * properties => json of {schema, data} (required)
+     * context => list of event contexts (optional)
+     * tstamp => positive integer (optional)
+     */
+    // The track logic is not async, no need to have an await,
+    // "track()" will perform a callback on the payload data but does not return
+    // a promise based on that.
+    // "function track(sb: PayloadData, context?: Array<SelfDescribingJson>, tstamp?: Timestamp): PayloadData {"
+    swdcTracker.spTracker.trackUnstructEvent(event_payload, contexts);
+  } catch (e) {
+    // We may get IPIPE, or ECONNRESET. Log it.
+    console.log("swdc-tracker unstruct track event error", e);
   }
-  return error();
+
+  return success();
 }
 
 function testEvent(properties: any, contexts: any): TrackerResponse {
