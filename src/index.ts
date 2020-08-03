@@ -22,12 +22,12 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     const tracker_api_host = result.data.tracker_api
 
     // initialize snowplow tracker
-    let protocol = "https";
-    if (tracker_api_host.indexOf("http") === 0) {
-      // use in case this is localhost testing
-      protocol = tracker_api_host.substring(0, tracker_api_host.indexOf(":"));
-    }
-    const e = emitter(tracker_api_host, protocol, null, "post", 0)
+    // endpoint, protocol, optional port, method, buffer events, request callback
+    const e = emitter(tracker_api_host, "https", null, "post", 0, function (error: any, body: any, response: any) {
+      if (error) {
+        console.log("swdc-tracker collector stream error", error);
+      }
+    });
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
     swdcTracker.spTracker.setPlatform('iot');
