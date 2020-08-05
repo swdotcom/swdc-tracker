@@ -2,6 +2,7 @@ import { PluginInterface } from "../entities/plugin";
 import { FileInterface } from "../entities/file";
 import { ProjectInterface } from "../entities/project";
 import { AuthInterface } from "../entities/auth";
+import { RepoInterface } from "../entities/repo";
 
 // The EditorAction event
 export interface EditorActionInterface {
@@ -35,7 +36,8 @@ export class EditorAction implements EditorActionInterface {
 
 export interface EditorActionParams
   extends AuthInterface,
-    PluginInterface,
-    FileInterface,
-    ProjectInterface,
-    EditorActionInterface {}
+  RepoInterface,
+  PluginInterface,
+  FileInterface,
+  ProjectInterface,
+  EditorActionInterface { }
