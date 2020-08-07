@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getPackageInfo } from "./env_helper";
+import { getPackageInfoFromFile } from "./env_helper";
 
 // build the axios api base url
 let axiosClient: any = {};
@@ -11,7 +11,7 @@ export function setBaseUrl(url: string) {
   });
 
   // set the tracker version and ID
-  const { name, version } = getPackageInfo();
+  const { name, version } = getPackageInfoFromFile();
   axiosClient.defaults.headers.common["X-SWDC-Tracker-Version"] = version || "";
   axiosClient.defaults.headers.common["X-SWDC-Tracker-Id"] = name || "swdc-tracker";
 }

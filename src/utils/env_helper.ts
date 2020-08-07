@@ -28,8 +28,13 @@ export function getPackageInfo(): any {
 }
 
 export function getPackageInfoFromFile(): any {
-  const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
-  const version = packageJson.version;
-  const name = packageJson.name;
-  return { name, version };
+  try {
+    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+    const version = packageJson.version;
+    const name = packageJson.name;
+    return { name, version };
+  } catch (e) {
+    // error reading the package json, return default info
+    return { name: "swdc-tracker", version: "" };
+  }
 }
