@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getPackageInfo } from "./env_helper";
 
 // build the axios api base url
 let axiosClient: any = {};
@@ -9,15 +10,8 @@ export function setBaseUrl(url: string) {
     timeout: 15000 // timeout so we're not getting ECONNRESET
   });
 
-  // set teh tracker version and ID
-  let version = process.env.npm_package_version;
-  let name = process.env.npm_package_name;
-  if (!version) {
-    const fs = require("fs");
-    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
-    version = packageJson.version;
-    name = packageJson.name;
-  }
+  // set the tracker version and ID
+  const { name, version } = getPackageInfo();
   axiosClient.defaults.headers.common["X-SWDC-Tracker-Version"] = version || "";
   axiosClient.defaults.headers.common["X-SWDC-Tracker-Id"] = name || "swdc-tracker";
 }
