@@ -16,25 +16,22 @@ export function isTestMode(): boolean {
   return getTrackerMode() === TrackerMode.TEST ? true : false;
 }
 
-export function getPackageInfo(): any {
-  let version = process.env.npm_package_version;
-  let name = process.env.npm_package_name;
-  if (!version) {
-    const nameVersionInfo = getPackageInfoFromFile();
-    name = nameVersionInfo.name;
-    version = nameVersionInfo.version;
+export function getPackageJson(): any {
+  try {
+    return JSON.parse(fs.readFileSync("package.json", "utf8"));
+  } catch (e) {
+    console.log("error reading package info", e);
   }
-  return { name, version };
+  return null;
 }
 
 export function getPackageInfoFromFile(): any {
-  try {
-    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+  const packageJson = getPackageJson();
+  if (packageJson) {
     const version = packageJson.version;
     const name = packageJson.name;
     return { name, version };
-  } catch (e) {
-    // error reading the package json, return default info
-    return { name: "swdc-tracker", version: "" };
   }
+  // 1.0.21 was the 1st version when this function was introduced
+  return { name: "swdc-tracker", version: "1.0.21" };
 }
