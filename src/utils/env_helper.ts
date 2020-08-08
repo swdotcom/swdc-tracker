@@ -1,4 +1,4 @@
-const fs = require("fs");
+const pckg = require("../../package.json");
 
 export enum TrackerMode {
   TEST = "test",
@@ -17,21 +17,14 @@ export function isTestMode(): boolean {
 }
 
 export function getPackageJson(): any {
-  try {
-    return JSON.parse(fs.readFileSync("package.json", "utf8"));
-  } catch (e) {
-    console.log("error reading package info", e);
+  if (pckg) {
+    return pckg;
   }
-  return null;
-}
 
-export function getPackageInfoFromFile(): any {
-  const packageJson = getPackageJson();
-  if (packageJson) {
-    const version = packageJson.version;
-    const name = packageJson.name;
-    return { name, version };
-  }
-  // 1.0.21 was the 1st version when this function was introduced
-  return { name: "swdc-tracker", version: "1.0.21" };
+  // unable to import the package json, use defaults
+  // 1.0.21 is the version this was introduced
+  return {
+    name: "swdc-tracker",
+    version: "1.0.21"
+  };
 }
