@@ -16,24 +16,6 @@ export async function buildContexts(params: any) {
 
   const contexts = [];
 
-  // code time
-  if (CodeTime.hasData(params)) {
-    const _codetimePayload = await new CodeTime(params).buildPayload();
-    contexts.push(_codetimePayload);
-  }
-
-  // editor action
-  if (EditorAction.hasData(params)) {
-    const _editorActionPayload = await new EditorAction(params).buildPayload();
-    contexts.push(_editorActionPayload);
-  }
-
-  // ui interaction
-  if (UIInteraction.hasData(params)) {
-    const _uiInteractionPayload = await new UIInteraction(params).buildPayload();
-    contexts.push(_uiInteractionPayload);
-  }
-
   // ui element
   if (UIElement.hasData(params)) {
     const _uiElementPayload = await new UIElement(params).buildPayload();
