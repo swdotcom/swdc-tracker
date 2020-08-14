@@ -18,12 +18,12 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
   try {
     // fetch tracker_api from plugin config
     setBaseUrl(swdcApiHost);
-    const result = await get("/plugins/config")
-    const tracker_api_host = result.data.tracker_api
-
+    const result = await get("/plugins/config");
+    const tracker_api_host = result.data.tracker_api;
+    const tracker_url_scheme = result.data.tracker_url_scheme || "https";
     // initialize snowplow tracker
     // endpoint, protocol, optional port, method, buffer events, request callback
-    const e = emitter(tracker_api_host, "https", null, "post", 0, function (error: any, body: any, response: any) {
+    const e = emitter(tracker_api_host, tracker_url_scheme, null, "post", 0, function (error: any, body: any, response: any) {
       if (error) {
         console.log("swdc-tracker collector stream error", error);
       }

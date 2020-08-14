@@ -29,11 +29,16 @@ describe("Test codetime event functions", function () {
     const eventData = {
       jwt: "JWT 123",
       keystrokes: 20,
-      chars_added: 111,
-      chars_deleted: 10,
-      pastes: 1,
       lines_added: 2,
-      lines_deleted: 3,
+      lines_removed: 3,
+      characters_added: 111,
+      characters_removed: 10,
+      single_deletes: 9,
+      multi_deletes: 1,
+      single_adds: 100,
+      multi_adds: 12,
+      auto_indents: 14,
+      replacements: 99,
       start_time: "2020-07-29T01:04:03Z",
       end_time: "2020-07-29T01:04:20Z",
       plugin_id: 4,
@@ -55,11 +60,16 @@ describe("Test codetime event functions", function () {
     // SCHEMA validation "codetime"
     expect(props.schema).to.include("codetime");
     expect(props.data.keystrokes).to.equal(20);
-    expect(props.data.chars_added).to.equal(111);
-    expect(props.data.chars_deleted).to.equal(10);
-    expect(props.data.pastes).to.equal(1);
     expect(props.data.lines_added).to.equal(2);
-    expect(props.data.lines_deleted).to.equal(3);
+    expect(props.data.lines_removed).to.equal(3);
+    expect(props.data.characters_added).to.equal(111);
+    expect(props.data.characters_removed).to.equal(10);
+    expect(props.data.single_deletes).to.equal(9);
+    expect(props.data.multi_deletes).to.equal(1);
+    expect(props.data.single_adds).to.equal(100);
+    expect(props.data.multi_adds).to.equal(12);
+    expect(props.data.auto_indents).to.equal(14);
+    expect(props.data.replacements).to.equal(99);
     expect(props.data.start_time).to.equal("2020-07-29T01:04:03Z");
     expect(props.data.end_time).to.equal("2020-07-29T01:04:20Z");
     // get the plugin context
