@@ -8,9 +8,9 @@ import { AuthInterface } from "../entities/auth";
 export interface CodeTimeInterface {
   keystrokes: number,
   lines_added: number,
-  lines_removed: number,
+  lines_deleted: number,
   characters_added: number,
-  characters_removed: number,
+  characters_deleted: number,
   single_deletes: number,
   multi_deletes: number,
   single_adds: number,
@@ -24,9 +24,9 @@ export interface CodeTimeInterface {
 export class CodeTime implements CodeTimeInterface {
   public keystrokes: number;
   public lines_added: number;
-  public lines_removed: number;
+  public lines_deleted: number;
   public characters_added: number;
-  public characters_removed: number;
+  public characters_deleted: number;
   public single_deletes: number;
   public multi_deletes: number;
   public single_adds: number;
@@ -39,9 +39,9 @@ export class CodeTime implements CodeTimeInterface {
   constructor(data: CodeTimeInterface) {
     this.keystrokes = data.keystrokes;
     this.lines_added = data.lines_added;
-    this.lines_removed = data.lines_removed;
+    this.lines_deleted = data.lines_deleted;
     this.characters_added = data.characters_added;
-    this.characters_removed = data.characters_removed;
+    this.characters_deleted = data.characters_deleted;
     this.single_deletes = data.single_deletes;
     this.multi_deletes = data.multi_deletes;
     this.single_adds = data.single_adds;
@@ -63,9 +63,9 @@ export class CodeTime implements CodeTimeInterface {
       data: {
         keystrokes: this.keystrokes,
         lines_added: this.lines_added,
-        lines_removed: this.lines_removed,
+        lines_deleted: this.lines_deleted,
         characters_added: this.characters_added,
-        characters_removed: this.characters_removed,
+        characters_deleted: this.characters_deleted,
         single_deletes: this.single_deletes,
         multi_deletes: this.multi_deletes,
         single_adds: this.single_adds,

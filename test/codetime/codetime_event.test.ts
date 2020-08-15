@@ -30,9 +30,9 @@ describe("Test codetime event functions", function () {
       jwt: "JWT 123",
       keystrokes: 20,
       lines_added: 2,
-      lines_removed: 3,
+      lines_deleted: 3,
       characters_added: 111,
-      characters_removed: 10,
+      characters_deleted: 10,
       single_deletes: 9,
       multi_deletes: 1,
       single_adds: 100,
@@ -61,9 +61,9 @@ describe("Test codetime event functions", function () {
     expect(props.schema).to.include("codetime");
     expect(props.data.keystrokes).to.equal(20);
     expect(props.data.lines_added).to.equal(2);
-    expect(props.data.lines_removed).to.equal(3);
+    expect(props.data.lines_deleted).to.equal(3);
     expect(props.data.characters_added).to.equal(111);
-    expect(props.data.characters_removed).to.equal(10);
+    expect(props.data.characters_deleted).to.equal(10);
     expect(props.data.single_deletes).to.equal(9);
     expect(props.data.multi_deletes).to.equal(1);
     expect(props.data.single_adds).to.equal(100);
