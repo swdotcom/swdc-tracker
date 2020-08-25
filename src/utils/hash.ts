@@ -3,7 +3,7 @@ import { get, post } from "./http";
 const _sodium = require('libsodium-wrappers');
 let sodium: any;
 
-let userHashedValues: any;
+let userHashedValues: any = {};
 
 export async function hashValue(value: string, dataType: string, jwt?: string) {
   if (!jwt) {
