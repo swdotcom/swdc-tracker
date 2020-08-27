@@ -29,8 +29,7 @@ export class File implements FileInterface {
   }
 
   async buildPayload(jwt: string) {
-
-    const hashedName = await hashValue(this.file_name, "file_name", jwt);
+    const hashedName = await hashValue(this.file_name.replace(/\\/g, "/"), "file_name", jwt);
     const hashedPath = await hashValue(this.file_path, "file_path", jwt);
 
     return {
