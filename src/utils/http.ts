@@ -25,7 +25,7 @@ export async function get(endpoint: string, jwt?: string) {
     // we need to catch an error so we're not getting this for example;
     // UnhandledPromiseRejectionWarning: Error: connect ECONNREFUSED 127.0.0.1:80
     // at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
-    const msg = e.message || e.code;
+    const msg = e.message || e.status;
     console.log("swdc-tracker get request error", msg);
     return e;
   });

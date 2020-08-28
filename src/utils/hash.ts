@@ -25,8 +25,21 @@ export async function hashValue(value: string, dataType: string, jwt?: string) {
   const hashValueAlreadyExists = !!userHashedValues[dataType] && userHashedValues[dataType].includes(hashedValue);
 
   if (!hashValueAlreadyExists) {
-    await encryptValue(value, hashedValue, dataType, jwt);
-    setUserHashedValues(jwt);
+    const response = await encryptValue(value, hashedValue, dataType, jwt);
+
+    if(response.status == 201) {
+      // update the local userHashedValues so that we don't re-encrypt it
+      if(userHashedValues[dataType]) {
+        userHashedValues[dataType].push(hashedValue);
+      } else {
+        userHashedValues[dataType] = [hashedValue]
+      }
+
+      // async update the hashedValues to stay up to date with the backend
+      setUserHashedValues(jwt);
+    } else {
+      console.log(`swdc-tracker received an error attempting to encrypt. status code: ${response.status}`)
+    }
   }
 
   return hashedValue;
@@ -43,7 +56,7 @@ async function encryptValue(value: string, hashedValue: string, dataType: string
     data_type: dataType
   }
 
-  post("/user_encrypted_data", params, jwt);
+  return post("/user_encrypted_data", params, jwt);
 }
 
 async function setUserHashedValues(jwt: string) {
