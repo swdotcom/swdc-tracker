@@ -15,7 +15,9 @@ describe("Hash Utility", function () {
         return { data: {} }
       });
 
-      sandbox.stub(http, "post").callsFake()
+      sandbox.stub(http, "post").callsFake(function () {
+        return { status: 201 }
+      })
     });
 
     afterEach(function () {
@@ -61,7 +63,9 @@ describe("Hash Utility", function () {
         return { data: userHashedValues }
       });
 
-      sandbox.stub(http, "post").callsFake()
+      sandbox.stub(http, "post").callsFake().callsFake(function () {
+        return { status: 201 }
+      })
     });
 
     afterEach(function() {
@@ -82,12 +86,12 @@ describe("Hash Utility", function () {
 
     context("when user hashed value does not exist", function() {
       it("encrypts the value", async function() {
-        await hashValue(string_param, "test-data-type", "test-jwt");
+        await hashValue("wow", "test-data-type", "test-jwt");
         expect(http.post.calledWith(
           "/user_encrypted_data",
           {
-            value: string_param,
-            hashed_value: expectedHashedValue,
+            value: "wow",
+            hashed_value: "ec52cc2cca29bc83f1d1f6916b885a52ac694d386ea8d1a9798f01aafc75d3bffc94f4d6ef21d354a4992ecbaa784a1d226347a043beac323ce7d500577290f7",
             data_type: "test-data-type"
           },
           "test-jwt"
@@ -95,7 +99,7 @@ describe("Hash Utility", function () {
       })
 
       it("gets the hashedValue list for the user", async function() {
-        await hashValue(string_param, "test-data-type", "test-jwt");
+        await hashValue("cool", "test-data-type", "test-jwt");
         expect(http.get.callCount).to.eq(1)
       })
     });
