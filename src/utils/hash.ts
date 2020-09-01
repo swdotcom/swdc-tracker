@@ -22,12 +22,7 @@ export async function hashValue(value: string, dataType: string, jwt?: string) {
 
   const hashedValue = sodium.to_hex(sodium.crypto_generichash(64, value));
 
-  const hashValueAlreadyExists = !!userHashedValues[dataType] && userHashedValues[dataType].includes(hashedValue);
-
-  if (!hashValueAlreadyExists) {
-    await encryptValue(value, hashedValue, dataType, jwt);
-    setUserHashedValues(jwt);
-  }
+  await encryptValue(value, hashedValue, dataType, jwt);
 
   return hashedValue;
 }
@@ -37,20 +32,27 @@ async function encryptValue(value: string, hashedValue: string, dataType: string
     return ""
   }
 
-  const params = {
-    value: value,
-    hashed_value: hashedValue,
-    data_type: dataType
-  }
+  const hashValueAlreadyExists = !!userHashedValues[dataType] && userHashedValues[dataType].includes(hashedValue);
 
-  const response =  await post("/user_encrypted_data", params, jwt);
-  if(response.status == 201) {
-    // update the local userHashedValues so that we don't re-encrypt it
-    if(userHashedValues[dataType]) {
-      userHashedValues[dataType].push(hashedValue);
-    } else {
-      userHashedValues[dataType] = [hashedValue]
+  if(!hashValueAlreadyExists) {
+    const params = {
+      value: value,
+      hashed_value: hashedValue,
+      data_type: dataType
     }
+
+    const response =  await post("/user_encrypted_data", params, jwt);
+
+    if(response.status == 201) {
+      // update the local userHashedValues so that we don't re-encrypt it
+      if(userHashedValues[dataType]) {
+        userHashedValues[dataType].push(hashedValue);
+      } else {
+        userHashedValues[dataType] = [hashedValue]
+      }
+    }
+
+    setUserHashedValues(jwt);
   }
 }
 
