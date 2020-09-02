@@ -1,4 +1,4 @@
-import { hashValue } from "../utils/hash";
+import { hashValues } from "../utils/hash";
 
 // The repo entity
 export interface RepoInterface {
@@ -29,21 +29,22 @@ export class Repo implements RepoInterface {
   }
 
   async buildPayload(jwt: string) {
-
-    const hashedName = await hashValue(this.repo_name, "repo_name", jwt);
-    const hashedIdentifier = await hashValue(this.repo_identifier, "repo_identifier", jwt);
-    const hashedOwnerId = await hashValue(this.owner_id, "owner_id", jwt);
-    const hashedGitBranch = await hashValue(this.git_branch, "git_branch", jwt);
-    const hashedGitTag = await hashValue(this.git_tag, "git_tag", jwt);
+    const hashedValues = await hashValues([
+        { value: this.repo_name, dataType: "repo_name"},
+        { value: this.repo_identifier, dataType: "repo_identifer"},
+        { value: this.owner_id, dataType: "owner_id" },
+        { value: this.git_branch, dataType: "git_branch" },
+        { value: this.git_tag, dataType: "git_tag" },
+    ], jwt)
 
     return {
       schema: "iglu:com.software/repo/jsonschema/1-0-0",
       data: {
-        repo_identifier: hashedIdentifier,
-        repo_name: hashedName,
-        owner_id: hashedOwnerId,
-        git_branch: hashedGitBranch,
-        git_tag: hashedGitTag
+        repo_identifier: hashedValues.repo_identifer,
+        repo_name: hashedValues.repo_name,
+        owner_id: hashedValues.owner_id,
+        git_branch: hashedValues.git_branch,
+        git_tag:hashedValues.git_tag 
       }
     }
   }

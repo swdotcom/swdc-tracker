@@ -1,126 +1,77 @@
-import { hashValue } from "../../src/utils/hash";
+import { 
+  hashValues, 
+  hasHashValueInCache, 
+  setUserHashedValues,
+  userHashedValues
+} from "../../src/utils/hash";
 import { expect } from 'chai'
 
 const http = require("../../src/utils/http");
 const sinon = require("sinon")
 
-describe("Hash Utility", function () {
+describe("hashedValues", function () {
   const sandbox = sinon.createSandbox();
 
-
-  context("when the JWT is not supplied", async function () {
-    beforeEach(function () {
-      // return any api since we're not really trying to call out
-      sandbox.stub(http, "get").callsFake(function () {
-        return { data: {} }
-      });
-
-      sandbox.stub(http, "post").callsFake(function () {
-        return { status: 201 }
-      })
+  beforeEach(function () {
+    sandbox.stub(http, "get").callsFake(function () {
+      return { data: {} }
     });
 
+    sandbox.stub(http, "post").callsFake(function () {
+      return { status: 201 }
+    });
+  });
+
+  afterEach(function () {
+    sandbox.restore();
+  });
+
+  it("returns the expected map of values", async function() {
+    const payload = [
+      { value: "/Users/bob/test_app/", dataType: "file_path" },
+      { value: "/Users/bob/test_app/path.js", dataType: "file_name" },
+      { value: "", dataType: "empty_string" },
+      { value: null, dataType: "null_value" }
+    ]
+
+    const result = await hashValues(payload, 'jwt-token');
+    expect(result.file_path).to.eql("e318cb72390f272c992c878c8f3e712b6dbbd5cf3b94b304eb7529f466c8bcded0312445c0af17ee5f7e48b816b9fe1c43fd7e10a46e7c35272a56bd33ddc149")
+    expect(result.file_name).to.eql("4a3bede4a465f6d4e95019a6a6c90fbf972e96b4c10eef3f08a576f22e83f69f7876946f1fb0effdab730ec4d6cd10cd71ba8da195e4e3967e4d25ee8df39576")
+    expect(result.null_value).to.eql(null)
+    expect(result.empty_string).to.eql("")
+  });
+
+  describe("hasHashValueInCache", function() {
+    it("returns false if the hash value does not exist", async function() {
+      const result = await hasHashValueInCache("file_path", "12345");
+      expect(result).to.eq(false);
+    });
+
+    it("adds the value if it does not exist", async function() {
+      await hasHashValueInCache("foobar", "54321");
+      const result = await hasHashValueInCache("foobar", "54321");
+      expect(result).to.eq(true);
+    });
+  });
+
+  describe("setUserHashedValues", function() {
+    beforeEach(function () {
+      sandbox.restore();
+      sandbox.stub(http, "get").callsFake(function () {
+        return { data: [{ foo: ["bar"] }] }
+      });
+    });
+  
     afterEach(function () {
       sandbox.restore();
     });
 
-    let string_param = "something";
-    it("returns empty string", async function () {
-      expect(await hashValue(string_param, "test-data-type")).to.equal("");
+    it("sets the userHashedValues eq to the response.data", async function() {
+      await setUserHashedValues("jwt-token");
+      expect(userHashedValues).to.eql([
+        { foo: ["bar"] }
+      ])
     });
-
-    it("does NOT encrypt the value", async function () {
-      await hashValue(string_param, "test-data-type")
-      expect(http.post.callCount).to.eq(0)
-    });
-
-    it("does not get hashed_values", async function () {
-      await hashValue(string_param, "test-data-type")
-      expect(http.get.callCount).to.eq(0)
-    });
-  });
-
-  context("when the parameter is empty string", async function () {
-    let string_param = "";
-    it("returns empty string", async function () {
-      expect(await hashValue(string_param, "test-data-type", "test-jwt")).to.equal("");
-    });
-  });
-
-  context("when the parameter is a string", async function () {
-    // the first hashed value in file_name = "alreadyexists"
-    let hashedValueThatAlreadyExists = "b6462a82e047f8fd12103ddeace50a4024f88cbcaf01c8705ff6a741408d3df1d70c57e65f80409d1098797b3dd428812443eef566e4dcbab2168734bacdc501"
-    let userHashedValues = {
-      "file_name": [hashedValueThatAlreadyExists, "fasdfsda", "asdfasdfsdew"],
-      "project_name": ["bbaljbl", "fjsfiejwil", "faksdjfjsad"]
-    };
-    let string_param = "secret_message";
-    let expectedHashedValue = '998504e62163ab1030d14ec90ba2d4e4dd87707f2591fcdcb6473e6f6c260778cdaed8b9e913b3965b9ab331553eedcbfb877b3268c3fa414a4cb09a5b30ee05'
-
-    beforeEach(function() {
-      // return any api since we're not really trying to call out
-      sandbox.stub(http, "get").callsFake(function () {
-        return { data: userHashedValues }
-      });
-
-      sandbox.stub(http, "post").callsFake().callsFake(function () {
-        return { status: 201 }
-      })
-    });
-
-    afterEach(function() {
-      sandbox.restore();
-    });
-
-    it("returns a hashed string with 128 character length", async function () {
-      let result = await hashValue(string_param, "project_name", 'test-jwt');
-      expect(result).to.be.a('string')
-        .that.matches(/^[a-f0-9]{128}$/)
-        .and.equal(expectedHashedValue);
-    });
-
-    it("gets the user's hashed values", async function () {
-      await hashValue(string_param, "test-data-type", "test-jwt");
-      expect(http.get.calledWith("/hashed_values", "test-jwt")).to.eq(true)
-    });
-
-    context("when user hashed value does not exist", function() {
-      it("encrypts the value", async function() {
-        await hashValue("wow", "test-data-type", "test-jwt");
-        expect(http.post.calledWith(
-          "/user_encrypted_data",
-          {
-            value: "wow",
-            hashed_value: "ec52cc2cca29bc83f1d1f6916b885a52ac694d386ea8d1a9798f01aafc75d3bffc94f4d6ef21d354a4992ecbaa784a1d226347a043beac323ce7d500577290f7",
-            data_type: "test-data-type"
-          },
-          "test-jwt"
-        )).to.eq(true)
-      })
-
-      it("gets the hashedValue list for the user", async function() {
-        await hashValue("cool", "test-data-type", "test-jwt");
-        expect(http.get.callCount).to.eq(1)
-      })
-    });
-
-    context("when the user hashed value already exists", function() {
-      it("does NOT encrypt the value", async function() {
-        await hashValue("alreadyexists", "file_name", "test-jwt");
-        expect(http.post.callCount).to.eq(0)
-      });
-
-      it("does NOT GET the hashedValue list for the user", async function() {
-        await hashValue("alreadyexists", "file_name", "test-jwt");
-        expect(http.get.callCount).to.eq(0)
-      })
-
-      it("returns a hashed string with 128 character length", async function () {
-        const result = await hashValue("alreadyexists", "file_name", "test-jwt");
-        expect(result).to.be.a('string')
-          .that.matches(/^[a-f0-9]{128}$/)
-          .and.equal(hashedValueThatAlreadyExists);
-      });
-    })
   });
 });
+

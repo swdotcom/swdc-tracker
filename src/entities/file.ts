@@ -1,4 +1,4 @@
-import { hashValue } from "../utils/hash";
+import { hashValues } from "../utils/hash";
 
 // The file entity
 export interface FileInterface {
@@ -29,14 +29,16 @@ export class File implements FileInterface {
   }
 
   async buildPayload(jwt: string) {
-    const hashedName = await hashValue(this.file_name.replace(/\\/g, "/"), "file_name", jwt);
-    const hashedPath = await hashValue(this.file_path, "file_path", jwt);
+    const hashedValues = await hashValues([
+      { value: this.file_name.replace(/\\/g, "/"), dataType: "file_name" },
+      { value: this.file_path, dataType: "file_path" }
+    ], jwt)
 
     return {
       schema: "iglu:com.software/file/jsonschema/1-0-1",
       data: {
-        file_name: hashedName,
-        file_path: hashedPath,
+        file_name: hashedValues.file_name,
+        file_path: hashedValues.file_path,
         syntax: this.syntax,
         line_count: this.line_count,
         character_count: this.character_count
