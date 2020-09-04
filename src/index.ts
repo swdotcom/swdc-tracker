@@ -7,7 +7,6 @@ import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
 import { buildContexts } from "./utils/context_helper";
 
 const snowplow = require("snowplow-tracker");
-
 const emitter = snowplow.emitter;
 const tracker = snowplow.tracker;
 const swdcTracker = <any>{};
@@ -31,7 +30,6 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
     swdcTracker.spTracker.setPlatform('iot');
-
 
     if (isTestMode()) {
       console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events');

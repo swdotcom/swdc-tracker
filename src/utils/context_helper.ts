@@ -5,7 +5,6 @@ import { Project } from "../entities/project";
 import { Repo } from "../entities/repo";
 import { File } from "../entities/file";
 import { Plugin } from "../entities/plugin";
-import { UIInteraction } from "../events/ui_interaction";
 import { UIElement } from "../entities/ui_element";
 
 /**
