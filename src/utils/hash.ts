@@ -1,9 +1,8 @@
 import { get, post } from "./http";
+import { storeHashedValues, getStoredHashedValues } from "../utils/file";
 
 const _sodium = require('libsodium-wrappers');
 let sodium: any;
-
-export let userHashedValues: any = {};
 
 export async function hashValues(payload: any, jwt: string) {
   if (sodium === undefined) {
@@ -14,7 +13,7 @@ export async function hashValues(payload: any, jwt: string) {
 
   let result: any = {}
 
-  for await (const hashPayload of payload) {
+  for (const hashPayload of payload) {
     if(hashPayload.value?.length) {
       const hashedValue = sodium.to_hex(sodium.crypto_generichash(64, hashPayload.value));
       const alreadyEncrypted = await hasHashValueInCache(hashPayload.dataType, hashedValue);
@@ -33,6 +32,8 @@ export async function hashValues(payload: any, jwt: string) {
 }
 
 export async function hasHashValueInCache(dataType: string, hashedValue: string) {
+  let userHashedValues = getStoredHashedValues();
+
   // add dataType to userHashedValues cache if it doesn't already exist
   if(!userHashedValues[dataType]) {
     userHashedValues[dataType] = []
@@ -43,6 +44,7 @@ export async function hasHashValueInCache(dataType: string, hashedValue: string)
   // if it does not have the value, add it
   if(!hasValue) {
     userHashedValues[dataType].push(hashedValue)
+    storeHashedValues(userHashedValues);
   }
 
   // return the result of hasValue
@@ -57,10 +59,10 @@ async function encryptValue(value: string, hashedValue: string, dataType: string
   }
 
   await post("/user_encrypted_data", params, jwt);
-  await setUserHashedValues(jwt);
 }
 
 export async function setUserHashedValues(jwt: string) {
   const response = await get("/hashed_values", jwt);
-  userHashedValues = response.data;
+  const hashed_values = response.data;
+  await storeHashedValues(hashed_values);
 }

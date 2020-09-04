@@ -2,7 +2,6 @@ import {
   hashValues, 
   hasHashValueInCache, 
   setUserHashedValues,
-  userHashedValues
 } from "../../src/utils/hash";
 import { expect } from 'chai'
 
@@ -51,26 +50,6 @@ describe("hashedValues", function () {
       await hasHashValueInCache("foobar", "54321");
       const result = await hasHashValueInCache("foobar", "54321");
       expect(result).to.eq(true);
-    });
-  });
-
-  describe("setUserHashedValues", function() {
-    beforeEach(function () {
-      sandbox.restore();
-      sandbox.stub(http, "get").callsFake(function () {
-        return { data: [{ foo: ["bar"] }] }
-      });
-    });
-  
-    afterEach(function () {
-      sandbox.restore();
-    });
-
-    it("sets the userHashedValues eq to the response.data", async function() {
-      await setUserHashedValues("jwt-token");
-      expect(userHashedValues).to.eql([
-        { foo: ["bar"] }
-      ])
     });
   });
 });
