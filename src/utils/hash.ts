@@ -8,7 +8,7 @@ let lastJwt: string = "";
 
 export async function hashValues(payload: any, jwt: string) {
   if (sodium === undefined) {
-    await Promise.all([_sodium.ready]).then(() => {
+    await Promise.resolve(_sodium.ready).then(() => {
       sodium = _sodium;
     });
   }
