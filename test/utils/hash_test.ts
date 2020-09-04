@@ -1,7 +1,6 @@
 import { 
   hashValues, 
   hasHashValueInCache, 
-  setUserHashedValues,
 } from "../../src/utils/hash";
 import { expect } from 'chai'
 

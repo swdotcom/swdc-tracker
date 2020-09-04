@@ -4,11 +4,20 @@ import { storeHashedValues, getStoredHashedValues } from "../utils/file";
 const _sodium = require('libsodium-wrappers');
 let sodium: any;
 
+let lastJwt: string = "";
+
 export async function hashValues(payload: any, jwt: string) {
   if (sodium === undefined) {
-    await Promise.all([setUserHashedValues(jwt), _sodium.ready]).then(() => {
+    await Promise.all([_sodium.ready]).then(() => {
       sodium = _sodium;
     });
+  }
+
+  // if the jwt is different from the last fetch (different user, or initializing tracker)
+  // fetch the hashed values and store them in ~/.software/hashed_values.json
+  if(lastJwt !== jwt) {
+    await setUserHashedValues(jwt);
+    lastJwt = jwt;
   }
 
   let result: any = {}
