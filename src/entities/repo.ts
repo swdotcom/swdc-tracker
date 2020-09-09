@@ -31,7 +31,7 @@ export class Repo implements RepoInterface {
   async buildPayload(jwt: string) {
     const hashedValues = await hashValues([
         { value: this.repo_name, dataType: "repo_name"},
-        { value: this.repo_identifier, dataType: "repo_identifer"},
+        { value: this.repo_identifier, dataType: "repo_identifier"},
         { value: this.owner_id, dataType: "owner_id" },
         { value: this.git_branch, dataType: "git_branch" },
         { value: this.git_tag, dataType: "git_tag" },

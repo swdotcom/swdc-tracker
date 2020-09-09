@@ -8,7 +8,7 @@ describe("configTests", function () {
 		it("verify version from package file", function () {
 			const { version } = getPackageJson();
 			const versionParts = version.split(".");
-			expect(parseInt(versionParts[2], 10)).to.be.gt(0);
+			expect(parseInt(versionParts[2], 10)).to.be.gt(-1);
 		});
 	});
 
