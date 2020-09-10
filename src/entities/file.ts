@@ -1,12 +1,13 @@
 import { hashValues } from "../utils/hash";
+import { convertWinPathToUnix } from "../utils/common_helper";
 
 // The file entity
 export interface FileInterface {
-  file_name: string,
-  file_path: string,
-  syntax: string,
-  line_count: number,
-  character_count: number
+  file_name: string;
+  file_path: string;
+  syntax: string;
+  line_count: number;
+  character_count: number;
 }
 
 export class File implements FileInterface {
@@ -29,10 +30,13 @@ export class File implements FileInterface {
   }
 
   async buildPayload(jwt: string) {
-    const hashedValues = await hashValues([
-      { value: this.file_name.replace(/\\/g, "/"), dataType: "file_name" },
-      { value: this.file_path, dataType: "file_path" }
-    ], jwt)
+    const hashedValues = await hashValues(
+      [
+        { value: convertWinPathToUnix(this.file_name), dataType: "file_name" },
+        { value: this.file_path, dataType: "file_path" },
+      ],
+      jwt
+    );
 
     return {
       schema: "iglu:com.software/file/jsonschema/1-0-1",
@@ -41,9 +45,8 @@ export class File implements FileInterface {
         file_path: hashedValues.file_path,
         syntax: this.syntax,
         line_count: this.line_count,
-        character_count: this.character_count
-      }
-    }
+        character_count: this.character_count,
+      },
+    };
   }
-
 }
