@@ -25,10 +25,10 @@ export class EditorAction implements EditorActionInterface {
 
   buildPayload() {
     return {
-      schema: "iglu:com.software/editor_action/jsonschema/1-0-1",
+      schema: "iglu:com.software/editor_action/jsonschema/1-0-2",
       data: {
         entity: this.entity,
-        type: this.type
+        type: this.type,
       },
     };
   }
@@ -36,8 +36,8 @@ export class EditorAction implements EditorActionInterface {
 
 export interface EditorActionParams
   extends AuthInterface,
-  RepoInterface,
-  PluginInterface,
-  FileInterface,
-  ProjectInterface,
-  EditorActionInterface { }
+    RepoInterface,
+    PluginInterface,
+    FileInterface,
+    ProjectInterface,
+    EditorActionInterface {}
