@@ -19,7 +19,7 @@ describe("UI Interaction Event", function () {
         }
       }
     });
-    await swdcTracker.initialize("api.software.com", "editor_action", "swdotcom-vscode");
+    await swdcTracker.initialize("api.software.com", "codetime", "swdotcom-vscode");
   });
 
   after(() => {

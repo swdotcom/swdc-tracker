@@ -1,6 +1,7 @@
 import { setBaseUrl, get } from "./utils/http";
 import { CodeTimeParams, CodeTime } from "./events/codetime";
 import { EditorActionParams, EditorAction } from "./events/editor_action";
+import { GitEventParams, GitEvent } from "./events/git_event";
 import { success, error, TrackerResponse } from "./utils/response";
 import { isTestMode } from "./utils/env_helper";
 import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
@@ -67,6 +68,18 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
   const contexts: any = await buildContexts(params);
 
   return await sendEvent(_editorActionPayload, contexts);
+}
+
+/**
+ * @param gitEvent - the GitEvent event extends Repo, Project, UncommittedChange, Auth
+ */
+swdcTracker.trackGitEvent = async (params: GitEventParams): Promise<any> => {
+
+  // build the contexts and event payload
+  const _codetimePayload: any = await new GitEvent(params).buildPayload();
+  const contexts: any = await buildContexts(params);
+
+  return await sendEvent(_codetimePayload, contexts);
 }
 
 /**

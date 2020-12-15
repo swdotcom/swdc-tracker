@@ -1,11 +1,10 @@
-import { CodeTime } from "../events/codetime";
-import { EditorAction } from "../events/editor_action";
 import { Auth } from "../entities/auth";
 import { Project } from "../entities/project";
 import { Repo } from "../entities/repo";
 import { File } from "../entities/file";
 import { Plugin } from "../entities/plugin";
 import { UIElement } from "../entities/ui_element";
+import { UncommittedChange } from "../entities/uncommitted_change";
 
 /**
  * Build the snowplow payloads based on params available
@@ -43,6 +42,14 @@ export async function buildContexts(params: any) {
   if (Plugin.hasData(params)) {
     const _pluginPayload = await new Plugin(params).buildPayload();
     contexts.push(_pluginPayload);
+  }
+
+  // uncommitted_changes
+  if (params.uncommitted_changes?.length > 0) {
+    for (const change of params.uncommitted_changes) {
+      if (UncommittedChange.hasData(change))
+        contexts.push(await new UncommittedChange(change).buildPayload(params.jwt));
+    }
   }
 
   // Auth is required
