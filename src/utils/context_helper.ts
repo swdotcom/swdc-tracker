@@ -45,7 +45,7 @@ export async function buildContexts(params: any) {
   }
 
   // uncommitted_changes
-  if (params.uncommitted_changes?.length > 0) {
+  if (Array.isArray(params.uncommitted_changes)) {
     for (const change of params.uncommitted_changes) {
       if (UncommittedChange.hasData(change))
         contexts.push(await new UncommittedChange(change).buildPayload(params.jwt));
