@@ -5,19 +5,19 @@ import { hashValues } from "../utils/hash";
 export interface UncommittedChangeInterface {
   file_name: string,
   insertions: number,
-  modifications: number
+  deletions: number
 }
 
 export class UncommittedChange implements UncommittedChangeInterface {
   public file_name: string;
   public insertions: number;
-  public modifications: number;
+  public deletions: number;
 
 
   constructor(data: UncommittedChangeInterface) {
     this.file_name = data.file_name;
     this.insertions = data.insertions;
-    this.modifications = data.modifications;
+    this.deletions = data.deletions;
   }
 
   static hasData(data: UncommittedChangeInterface) {
@@ -34,7 +34,7 @@ export class UncommittedChange implements UncommittedChangeInterface {
       data: {
         file_name: hashedValues.file_name,
         insertions: this.insertions,
-        modifications: this.modifications
+        deletions: this.deletions
       }
     }
   }

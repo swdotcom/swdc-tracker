@@ -33,12 +33,12 @@ describe("Test git_event functions", function () {
         {
           file_name: "/db/migration/new.rb",
           insertions: 23,
-          modifications: 0
+          deletions: 0
         },
         {
           file_name: "/app/models/user.rb",
           insertions: 2,
-          modifications: 15
+          deletions: 15
         }
       ],
       plugin_id: 4,
@@ -60,9 +60,7 @@ describe("Test git_event functions", function () {
     it("sets the git_event property", async function () {
       await swdcTracker.trackGitEvent(eventData);
       const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
-      console.log(JSON.stringify(lastProcessedTestEvent));
       const props = lastProcessedTestEvent.properties;
-      console.log(props);
       expect(props.schema).to.include("git_event");
       expect(props.data.git_event).to.equal("uncommitted_change");
     });
@@ -74,6 +72,15 @@ describe("Test git_event functions", function () {
       // get the plugin context
       const uncommittedChangesContexts: any = contexts.filter((n: any) => n.schema.includes("uncommitted_change"));
       expect(uncommittedChangesContexts.length).to.equal(2);
+    });
+
+    it("sets the correct attributes in the uncommitted_change entity", async function () {
+      await swdcTracker.trackGitEvent(eventData);
+      const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
+      const contexts = lastProcessedTestEvent.contexts;
+      // get the plugin context
+      const uncommittedChangesContext: any = contexts.find((n: any) => n.schema.includes("uncommitted_change"));
+      expect(Object.keys(uncommittedChangesContext.data)).to.eql(['file_name', 'insertions','deletions']);
     });
   });
 });
