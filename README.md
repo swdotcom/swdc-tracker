@@ -1,5 +1,7 @@
 # swdc-tracker
 
+![main](https://github.com/swdotcom/swdc-tracker/workflows/Build%20and%20Test/badge.svg)
+
 Sends data to snowplow. Use this to track events in plugins written in js.
 
 ## Install
