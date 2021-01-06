@@ -4,7 +4,7 @@ import { Repo } from "../entities/repo";
 import { File } from "../entities/file";
 import { Plugin } from "../entities/plugin";
 import { UIElement } from "../entities/ui_element";
-import { UncommittedChange } from "../entities/uncommitted_change";
+import { FileChange } from "../entities/file_change";
 
 /**
  * Build the snowplow payloads based on params available
@@ -45,10 +45,10 @@ export async function buildContexts(params: any) {
   }
 
   // uncommitted_changes
-  if (Array.isArray(params.uncommitted_changes)) {
-    for (const change of params.uncommitted_changes) {
-      if (UncommittedChange.hasData(change))
-        contexts.push(await new UncommittedChange(change).buildPayload(params.jwt));
+  if (Array.isArray(params.file_changes)) {
+    for (const change of params.file_changes) {
+      if (FileChange.hasData(change))
+        contexts.push(await new FileChange(change).buildPayload(params.jwt));
     }
   }
 
