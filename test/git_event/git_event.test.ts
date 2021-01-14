@@ -27,9 +27,9 @@ describe("Test git_event functions", function () {
 
   context("with a valid payload", async function() {
     const eventData = {
-      git_event: "uncommitted_change",
+      git_event_type: "uncommitted_change",
       jwt: "JWT 123",
-      uncommitted_changes: [
+      file_changes: [
         {
           file_name: "/db/migration/new.rb",
           insertions: 23,
@@ -62,25 +62,26 @@ describe("Test git_event functions", function () {
       const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
       const props = lastProcessedTestEvent.properties;
       expect(props.schema).to.include("git_event");
-      expect(props.data.git_event).to.equal("uncommitted_change");
+      expect(props.data.git_event_type).to.equal("uncommitted_change");
     });
 
-    it("sets multiple uncommitted_change entities", async function () {
+    it("sets multiple file_change entities", async function () {
       await swdcTracker.trackGitEvent(eventData);
       const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
       const contexts = lastProcessedTestEvent.contexts;
       // get the plugin context
-      const uncommittedChangesContexts: any = contexts.filter((n: any) => n.schema.includes("uncommitted_change"));
-      expect(uncommittedChangesContexts.length).to.equal(2);
+      const fileChangeContexts: any = contexts.filter((n: any) => n.schema.includes("file_change"));
+
+      expect(fileChangeContexts.length).to.equal(2);
     });
 
-    it("sets the correct attributes in the uncommitted_change entity", async function () {
+    it("sets the correct attributes in the file_change entity", async function () {
       await swdcTracker.trackGitEvent(eventData);
       const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
       const contexts = lastProcessedTestEvent.contexts;
       // get the plugin context
-      const uncommittedChangesContext: any = contexts.find((n: any) => n.schema.includes("uncommitted_change"));
-      expect(Object.keys(uncommittedChangesContext.data)).to.eql(['file_name', 'insertions','deletions']);
+      const fileChangeContext: any = contexts.find((n: any) => n.schema.includes("file_change"));
+      expect(Object.keys(fileChangeContext.data)).to.eql(['file_name', 'insertions','deletions']);
     });
   });
 });

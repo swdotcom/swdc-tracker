@@ -2,26 +2,26 @@ import { hashValues } from "../utils/hash";
 
 // The Uncommitted Change entity
 
-export interface UncommittedChangeInterface {
+export interface FileChangeInterface {
   file_name: string,
   insertions: number,
   deletions: number
 }
 
-export class UncommittedChange implements UncommittedChangeInterface {
+export class FileChange implements FileChangeInterface {
   public file_name: string;
   public insertions: number;
   public deletions: number;
 
 
-  constructor(data: UncommittedChangeInterface) {
+  constructor(data: FileChangeInterface) {
     this.file_name = data.file_name;
     this.insertions = data.insertions;
     this.deletions = data.deletions;
   }
 
-  static hasData(data: UncommittedChangeInterface) {
-    return data.file_name;
+  static hasData(data: FileChangeInterface) {
+    return data.file_name ?? data.insertions ?? data.deletions;
   }
 
   async buildPayload(jwt: string) {
@@ -30,7 +30,7 @@ export class UncommittedChange implements UncommittedChangeInterface {
     ], jwt)
 
     return {
-      schema: "iglu:com.software/uncommitted_change/jsonschema/1-0-0",
+      schema: "iglu:com.software/file_change/jsonschema/1-0-0",
       data: {
         file_name: hashedValues.file_name,
         insertions: this.insertions,
