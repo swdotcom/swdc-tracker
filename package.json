@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@types/node": "^14.0.13",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "file-it": "^1.0.24",
     "libsodium": "^0.7.6",
     "libsodium-wrappers": "^0.7.6",
