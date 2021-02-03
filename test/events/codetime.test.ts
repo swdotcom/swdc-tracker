@@ -18,7 +18,10 @@ describe("Test codetime event functions", function () {
         }
       }
     });
-    await swdcTracker.initialize("api.software.com", "codetime", "swdotcom-vscode");
+    sandbox.stub(http, "post").callsFake(function () {
+      return { status: 201 }
+    });
+    await swdcTracker.initialize("localhost:5005", "codetime", "swdotcom-vscode");
   });
 
   after(() => {

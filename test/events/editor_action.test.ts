@@ -18,7 +18,7 @@ describe("Test editor action event functions", function () {
         }
       }
     });
-    await swdcTracker.initialize("api.software.com", "editor_action", "swdotcom-vscode");
+    await swdcTracker.initialize("localhost:5005", "editor_action", "swdotcom-vscode");
   });
 
   after(() => {
