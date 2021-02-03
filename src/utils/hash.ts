@@ -6,7 +6,8 @@ let sodium: any;
 
 let lastJwt: string = "";
 
-export async function hashValues(payload: any, jwt: string) {
+// payload: { value: string, dataType: string}
+export async function hashAndEncryptValues(payload: any, jwt: string) {
   if (sodium === undefined) {
     await Promise.resolve(_sodium.ready).then(() => {
       sodium = _sodium;
@@ -38,6 +39,16 @@ export async function hashValues(payload: any, jwt: string) {
   };
 
   return result;
+}
+
+export async function hashValue(value: string) {
+  if (sodium === undefined) {
+    await Promise.resolve(_sodium.ready).then(() => {
+      sodium = _sodium;
+    });
+  }
+
+  return sodium.to_hex(sodium.crypto_generichash(64, value));
 }
 
 export async function hasHashValueInCache(dataType: string, hashedValue: string) {

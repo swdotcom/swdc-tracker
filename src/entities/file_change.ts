@@ -1,4 +1,4 @@
-import { hashValues } from "../utils/hash";
+import { hashValue } from "../utils/hash";
 
 // The Uncommitted Change entity
 
@@ -25,14 +25,13 @@ export class FileChange implements FileChangeInterface {
   }
 
   async buildPayload(jwt: string) {
-    const hashedValues = await hashValues([
-        { value: this.file_name, dataType: "file_name"}
-    ], jwt)
-
     return {
       schema: "iglu:com.software/file_change/jsonschema/1-0-0",
       data: {
-        file_name: hashedValues.file_name,
+        // Only hash the value here. If the user works on this
+        // file, it will be tracked as a separate event and
+        // encrypted at that point in time.
+        file_name: await hashValue(this.file_name),
         insertions: this.insertions,
         deletions: this.deletions
       }
