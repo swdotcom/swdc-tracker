@@ -1,4 +1,4 @@
-import { hashValues } from "../utils/hash";
+import { hashAndEncryptValues } from "../utils/hash";
 
 // The project entity
 export interface ProjectInterface {
@@ -20,7 +20,7 @@ export class Project implements ProjectInterface {
   }
 
   async buildPayload(jwt: string) {
-    const hashedValues = await hashValues([
+    const hashedValues = await hashAndEncryptValues([
       { value: this.project_name, dataType: "project_name" },
       { value: this.project_directory, dataType: "project_directory" }
     ], jwt)

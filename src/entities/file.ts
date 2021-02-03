@@ -1,4 +1,4 @@
-import { hashValues } from "../utils/hash";
+import { hashAndEncryptValues } from "../utils/hash";
 import { convertWinPathToUnix } from "../utils/common_helper";
 
 // The file entity
@@ -30,7 +30,7 @@ export class File implements FileInterface {
   }
 
   async buildPayload(jwt: string) {
-    const hashedValues = await hashValues(
+    const hashedValues = await hashAndEncryptValues(
       [
         { value: convertWinPathToUnix(this.file_name), dataType: "file_name" },
         { value: this.file_path, dataType: "file_path" },

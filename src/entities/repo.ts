@@ -1,4 +1,4 @@
-import { hashValues } from "../utils/hash";
+import { hashAndEncryptValues } from "../utils/hash";
 
 // The repo entity
 export interface RepoInterface {
@@ -29,7 +29,7 @@ export class Repo implements RepoInterface {
   }
 
   async buildPayload(jwt: string) {
-    const hashedValues = await hashValues([
+    const hashedValues = await hashAndEncryptValues([
         { value: this.repo_name, dataType: "repo_name"},
         { value: this.repo_identifier, dataType: "repo_identifier"},
         { value: this.owner_id, dataType: "owner_id" },
@@ -44,7 +44,7 @@ export class Repo implements RepoInterface {
         repo_name: hashedValues.repo_name,
         owner_id: hashedValues.owner_id,
         git_branch: hashedValues.git_branch,
-        git_tag:hashedValues.git_tag 
+        git_tag: hashedValues.git_tag
       }
     }
   }
