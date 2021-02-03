@@ -33,9 +33,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     swdcTracker.spTracker.setPlatform('iot');
     swdcTracker.spTracker.setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
-    if (isTestMode()) {
-      console.log('swdc-tracker test mode on. set env ENABLE_SWDC_TRACKER to "true" to send events');
-    } else {
+    if (!isTestMode()) {
       console.log(`swdc-tracker initialized and ready to send events to ${tracker_api_host}`);
     }
 

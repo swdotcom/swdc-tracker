@@ -2,8 +2,11 @@ import swdcTracker from "../../src/index";
 import { TrackerResponse } from "../../src/utils/response";
 
 const http = require("../../src/utils/http");
-const expect = require("chai").expect;
+const chai = require("chai");
+const expect = chai.expect;
 const sinon = require("sinon");
+const sinonChai = require("sinon-chai");
+chai.use(sinonChai);
 
 describe("Test git_event functions", function () {
 
@@ -18,7 +21,10 @@ describe("Test git_event functions", function () {
         }
       }
     });
-    await swdcTracker.initialize("api.software.com", "codetime", "swdotcom-vscode");
+    sandbox.stub(http, "post").callsFake(function () {
+      return { status: 201 }
+    });
+    await swdcTracker.initialize("localhost:5005", "codetime", "swdotcom-vscode");
   });
 
   afterEach(() => {
@@ -57,6 +63,7 @@ describe("Test git_event functions", function () {
 
       expect(response.status).to.equal(200);
     });
+
     it("sets the git_event property", async function () {
       await swdcTracker.trackGitEvent(eventData);
       const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
@@ -81,7 +88,32 @@ describe("Test git_event functions", function () {
       const contexts = lastProcessedTestEvent.contexts;
       // get the plugin context
       const fileChangeContext: any = contexts.find((n: any) => n.schema.includes("file_change"));
-      expect(Object.keys(fileChangeContext.data)).to.eql(['file_name', 'insertions','deletions']);
+      expect(Object.keys(fileChangeContext.data)).to.eql(['file_name', 'insertions', 'deletions']);
+    });
+
+    it("does not encrypt the file_change file_names", async function() {
+      // Purposely leaving out fields so that we can make sure that
+      // POST /user_encrypted_data is not called for file changes.
+      const eventData = {
+        git_event_type: "uncommitted_change",
+        jwt: "JWT 123",
+        file_changes: [
+          {
+            file_name: "/db/migration/new.rb",
+            insertions: 23,
+            deletions: 0
+          },
+          {
+            file_name: "/app/models/user.rb",
+            insertions: 2,
+            deletions: 15
+          }
+        ]
+      }
+      await swdcTracker.trackGitEvent(eventData);
+
+      expect(http.post).to.not.have
+        .been.calledWith("/user_encrypted_data", sinon.match.any, sinon.match.any)
     });
   });
 });

@@ -1,6 +1,7 @@
 const os = require("os");
 const fs = require("fs");
 const fileIt = require("file-it");
+import { isTestMode } from "./env_helper";
 
 export async function storeHashedValues(userHashedValues: any) {
   fileIt.writeJsonFileSync(getSoftwareHashedValuesFile(), userHashedValues);
@@ -30,6 +31,10 @@ export function getSoftwareDir(autoCreate = true) {
       softwareDataDir += "\\.software";
   } else {
       softwareDataDir += "/.software";
+  }
+
+  if (isTestMode()) {
+    softwareDataDir = `${softwareDataDir}-test`;
   }
 
   if (autoCreate && !fs.existsSync(softwareDataDir)) {
