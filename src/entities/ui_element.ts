@@ -28,7 +28,7 @@ export class UIElement implements UIElementInterface {
 
   async buildPayload() {
     return {
-      schema: "iglu:com.software/ui_element/jsonschema/1-0-4",
+      schema: "iglu:com.software/ui_element/jsonschema/1-0-5",
       data: {
         element_name: this.element_name,
         element_location: this.element_location,
