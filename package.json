@@ -1,6 +1,6 @@
 {
   "name": "swdc-tracker",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "swdc event tracker",
   "main": "dist",
   "types": "dist/index.d.js",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@types/node": "^14.0.13",
     "axios": "^0.21.1",
-    "file-it": "^1.0.24",
+    "file-it": "^1.1.1",
     "libsodium": "^0.7.6",
     "libsodium-wrappers": "^0.7.6",
     "lodash": "^4.17.19",
