@@ -14,7 +14,7 @@ const swdcTracker = <any>{};
 
 let lastProcessedTestEvent: any = {};
 
-swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string): Promise<TrackerResponse> => {
+swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string, callbackHandler: any = undefined): Promise<TrackerResponse> => {
   try {
     // fetch tracker_api from plugin config
     setBaseUrl(swdcApiHost);
@@ -23,9 +23,19 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     const tracker_url_scheme = result.data.tracker_url_scheme || "https";
     // initialize snowplow tracker
     // endpoint, protocol, optional port, method, buffer events, request callback
-    const e = emitter(tracker_api_host, tracker_url_scheme, null, "post", 0, function (error: any, body: any, response: any) {
-      if (error) {
+    const e = emitter(tracker_api_host, tracker_url_scheme, null, "post", 0, function (err: any, body: any, response: any) {
+      let resp: any;
+      if (err) {
         console.log("swdc-tracker collector stream error", error);
+        // send the error response with the orig body data
+        resp = error(500, err, `swdc-tracker event error. ${err.message}`);
+      } else {
+        resp = success();
+      }
+
+      if (callbackHandler) {
+        resp.body = body;
+        callbackHandler(resp);
       }
     });
 
@@ -39,7 +49,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 
     return success();
   } catch (e) {
-    return error(500, `Failed to initialize. ${e.message}`);
+    return error(500, e, `Failed to initialize. ${e.message}`);
   }
 };
 
@@ -100,16 +110,7 @@ async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResp
   }
 
   try {
-    /**
-     * trackUnstructEvent takes the following:
-     * properties => json of {schema, data} (required)
-     * context => list of event contexts (optional)
-     * tstamp => positive integer (optional)
-     */
-    // The track logic is not async, no need to have an await,
-    // "track()" will perform a callback on the payload data but does not return
-    // a promise based on that.
-    // "function track(sb: PayloadData, context?: Array<SelfDescribingJson>, tstamp?: Timestamp): PayloadData {"
+    // use the error callback to handle any errors
     swdcTracker.spTracker.trackUnstructEvent(event_payload, contexts);
   } catch (e) {
     // We may get IPIPE, or ECONNRESET. Log it.
