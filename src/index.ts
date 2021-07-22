@@ -26,9 +26,10 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     const e = emitter(tracker_api_host, tracker_url_scheme, null, "post", 0, function (err: any, body: any, response: any) {
       let resp: any;
       if (err) {
-        console.log("swdc-tracker collector stream error", error);
+        const errMsg = `swdc-tracker event error. ${err.message}`;
+        console.log(errMsg);
         // send the error response with the orig body data
-        resp = error(500, err, `swdc-tracker event error. ${err.message}`);
+        resp = error(500, err, errMsg);
       } else {
         resp = success();
       }
