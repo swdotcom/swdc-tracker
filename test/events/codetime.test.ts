@@ -1,6 +1,8 @@
-import swdcTracker from "../../src/index";
+import swdcTracker, { CodeTime } from "../../src/index";
+import { buildContexts } from "../../src/utils/context_helper";
 import { TrackerResponse } from "../../src/utils/response";
 
+const hash = require("object-hash");
 const http = require("../../src/utils/http");
 const expect = require("chai").expect;
 const sinon = require("sinon");
@@ -83,5 +85,38 @@ describe("Test codetime event functions", function () {
     const projectContext: any = contexts.find((n: any) => n.schema.includes("project"));
     expect(projectContext.data.project_name).to.be.a('string').that.matches(/^[a-f0-9]{128}$/);
     expect(projectContext.data.project_directory).to.be.a('string').that.matches(/^[a-f0-9]{128}$/);
-  })
+  });
+
+  it("Stores the code time params to reconcile", async function () {
+    const eventData: any = {
+      jwt: "JWT 456",
+      keystrokes: 20,
+      lines_added: 2,
+      lines_deleted: 3,
+      characters_added: 111,
+      characters_deleted: 10,
+      single_deletes: 9,
+      multi_deletes: 1,
+      single_adds: 100,
+      multi_adds: 12,
+      auto_indents: 14,
+      replacements: 99,
+      start_time: "2021-07-29T01:04:03Z",
+      end_time: "2021-07-29T01:04:20Z",
+      plugin_id: 4,
+      plugin_name: "code-time",
+      plugin_version: "2.2.0",
+      project_name: "foo",
+      project_directory: "baz"
+    };
+
+    const codetimePayload: any = new CodeTime(eventData).buildPayload();
+    const payloadHash = hash(codetimePayload);
+
+    await swdcTracker.trackCodeTimeEvent(eventData);
+    const outgoingPayload = swdcTracker.getOutgoingCodeTimeParams(payloadHash);
+
+    expect(outgoingPayload.jwt).to.eq(eventData.jwt);
+    expect(outgoingPayload.end_time).to.eq(eventData.end_time);
+  });
 });

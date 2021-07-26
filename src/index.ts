@@ -6,6 +6,7 @@ import { success, error, TrackerResponse } from "./utils/response";
 import { isTestMode } from "./utils/env_helper";
 import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
 import { buildContexts } from "./utils/context_helper";
+
 const hash = require("object-hash");
 
 const snowplow = require("snowplow-tracker");
@@ -28,7 +29,7 @@ const outgoingEventReconciler = (body: any) => {
         const schmema = JSON.parse(ctPayload.ue_pr);
         // match the hash in the map then remove if found
         const ctPayloadHash = hash(schmema.data);
-        const outgoingPayload = outgoingCodetimeEventMap[ctPayloadHash];
+        const outgoingPayload = swdcTracker.getOutgoingCodeTimeParams(ctPayloadHash);
         if (outgoingPayload) {
           // remove this event from the map
           delete outgoingCodetimeEventMap[ctPayloadHash];
@@ -184,6 +185,10 @@ function testEvent(properties: any, contexts: any): TrackerResponse {
 
 swdcTracker.getLastProcessedTestEvent = (): any => {
   return lastProcessedTestEvent;
+}
+
+swdcTracker.getOutgoingCodeTimeParams = (hash: string): any => {
+  return outgoingCodetimeEventMap[hash];
 }
 
 export default swdcTracker;
