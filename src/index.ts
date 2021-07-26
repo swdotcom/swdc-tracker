@@ -6,13 +6,54 @@ import { success, error, TrackerResponse } from "./utils/response";
 import { isTestMode } from "./utils/env_helper";
 import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
 import { buildContexts } from "./utils/context_helper";
+const hash = require("object-hash");
 
 const snowplow = require("snowplow-tracker");
 const emitter = snowplow.emitter;
 const tracker = snowplow.tracker;
 const swdcTracker = <any>{};
+const ONE_HOUR_MILLIS = 1000 * 60 * 60;
 
 let lastProcessedTestEvent: any = {};
+let outgoingCodetimeEventMap: any = {};
+let pendingCodetimeEventTimer: any = undefined;
+
+const outgoingEventReconciler = (body: any) => {
+  if (body && Object.keys(body).length) {
+    try {
+      const payload = JSON.parse(body.request.body);
+      // find the codetime schema
+      const ctPayload = payload?.data.find((n:any) => n.ue_pr.includes("com.software/codetime"));
+      if (ctPayload) {
+        const schmema = JSON.parse(ctPayload.ue_pr);
+        // match the hash in the map then remove if found
+        const ctPayloadHash = hash(schmema.data);
+        const outgoingPayload = outgoingCodetimeEventMap[ctPayloadHash];
+        if (outgoingPayload) {
+          // remove this event from the map
+          delete outgoingCodetimeEventMap[ctPayloadHash];
+        }
+      }
+    } catch (e) {
+      console.error("Error parsing tracker result. ", e.message);
+    }
+  }
+}
+
+const sendPendingCodeTimeEvents = () => {
+  if (outgoingCodetimeEventMap) {
+    Object.keys(outgoingCodetimeEventMap).forEach(key => {
+      const codetimeParams: any = outgoingCodetimeEventMap[key];
+      swdcTracker.trackCodeTimeEvent(codetimeParams);
+    });
+  }
+}
+
+swdcTracker.dispose = () => {
+  if (pendingCodetimeEventTimer) {
+    clearInterval(pendingCodetimeEventTimer);
+  }
+}
 
 swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: string, callbackHandler: any = undefined): Promise<TrackerResponse> => {
   try {
@@ -38,6 +79,8 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
         resp.body = body;
         callbackHandler(resp);
       }
+
+      outgoingEventReconciler(body);
     });
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
@@ -47,6 +90,10 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     if (!isTestMode()) {
       console.log(`swdc-tracker initialized and ready to send events to ${tracker_api_host}`);
     }
+
+    pendingCodetimeEventTimer = setInterval(() => {
+      sendPendingCodeTimeEvents();
+    }, ONE_HOUR_MILLIS);
 
     return success();
   } catch (e) {
@@ -62,6 +109,9 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
   // build the contexts and event payload
   const codetimePayload: any = new CodeTime(params).buildPayload();
   const contexts: any = await buildContexts(params);
+
+  const payloadHash = hash(codetimePayload);
+  outgoingCodetimeEventMap[payloadHash] = params;
 
   return await sendEvent(codetimePayload, contexts);
 }
