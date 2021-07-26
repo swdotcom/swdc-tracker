@@ -1,10 +1,10 @@
 import { setBaseUrl, get } from "./utils/http";
-import { CodeTimeParams, CodeTime } from "./events/codetime";
-import { EditorActionParams, EditorAction } from "./events/editor_action";
-import { GitEventParams, GitEvent } from "./events/git_event";
+import { CodeTimeParams, CodeTime, codetime_schema } from "./events/codetime";
+import { EditorActionParams, EditorAction, editor_action_schema } from "./events/editor_action";
+import { GitEventParams, GitEvent, git_schema } from "./events/git_event";
 import { success, error, TrackerResponse } from "./utils/response";
 import { isTestMode } from "./utils/env_helper";
-import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
+import { UIInteractionParams, UIInteraction, ui_interaction_schema } from "./events/ui_interaction";
 import { buildContexts } from "./utils/context_helper";
 
 const hash = require("object-hash");
@@ -16,43 +16,64 @@ const swdcTracker = <any>{};
 const ONE_HOUR_MILLIS = 1000 * 60 * 60;
 
 let lastProcessedTestEvent: any = {};
-let outgoingCodetimeEventMap: any = {};
-let pendingCodetimeEventTimer: any = undefined;
+const outgoingEventMap: any = {
+  codetime_event: {},
+  editor_action_event: {},
+  ui_interaction_event: {},
+  git_event: {}
+};
+
+let pendingEventTimer: any = undefined;
 
 const outgoingEventReconciler = (body: any) => {
   if (body && Object.keys(body).length) {
     try {
-      const payload = JSON.parse(body.request.body);
+      const schema_body = JSON.parse(body.request.body);
       // find the codetime schema
-      const ctPayload = payload?.data.find((n:any) => n.ue_pr.includes("com.software/codetime"));
-      if (ctPayload) {
-        const schmema = JSON.parse(ctPayload.ue_pr);
+      const schema_data = schema_body?.data.find((schema_metadata:any) => schema_metadata.ue_pr.includes("iglu:com.software/"));
+      if (schema_data) {
+        const event_obj = JSON.parse(schema_data.ue_pr);
         // match the hash in the map then remove if found
-        const ctPayloadHash = hash(schmema.data);
-        const outgoingPayload = outgoingCodetimeEventMap[ctPayloadHash];
+        const payloadHash = hash(event_obj.data);
+
+        // found an outgoing event
+        // default to the event that happens the most
+        let event_key = "editor_action_event";
+        if (schema_data.ue_pr.includes(codetime_schema)) {
+          event_key = "codetime_event";
+        } else if (schema_data.ue_pr.includes(ui_interaction_schema)) {
+          event_key = "ui_interaction_event";
+        } else if (schema_data.ue_pr.includes(git_schema)) {
+          event_key = "git_event";
+        }
+
+        const outgoingPayload = outgoingEventMap[event_key][payloadHash];
         if (outgoingPayload) {
           // remove this event from the map
-          delete outgoingCodetimeEventMap[ctPayloadHash];
+          delete outgoingEventMap[event_key][payloadHash];
         }
       }
+
     } catch (e) {
       console.error("Error parsing tracker result. ", e.message);
     }
   }
 }
 
+// com.software/editor_action
+
 const sendPendingCodeTimeEvents = () => {
-  if (outgoingCodetimeEventMap) {
-    Object.keys(outgoingCodetimeEventMap).forEach(key => {
-      const codetimeParams: any = outgoingCodetimeEventMap[key];
+  if (outgoingEventMap) {
+    Object.keys(outgoingEventMap).forEach(key => {
+      const codetimeParams: any = outgoingEventMap[key];
       swdcTracker.trackCodeTimeEvent(codetimeParams);
     });
   }
 }
 
 swdcTracker.dispose = () => {
-  if (pendingCodetimeEventTimer) {
-    clearInterval(pendingCodetimeEventTimer);
+  if (pendingEventTimer) {
+    clearInterval(pendingEventTimer);
   }
 }
 
@@ -69,7 +90,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
       let resp: any;
       if (err) {
         const errMsg = `swdc-tracker event error. ${err.message}`;
-        console.log(errMsg);
+        console.error(errMsg);
         // send the error response with the orig body data
         resp = error(500, err, errMsg);
       } else {
@@ -92,7 +113,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
       console.log(`swdc-tracker initialized and ready to send events to ${tracker_api_host}`);
     }
 
-    pendingCodetimeEventTimer = setInterval(() => {
+    pendingEventTimer = setInterval(() => {
       sendPendingCodeTimeEvents();
     }, ONE_HOUR_MILLIS);
 
@@ -112,7 +133,7 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
   const contexts: any = await buildContexts(params);
 
   const payloadHash = hash(codetimePayload);
-  outgoingCodetimeEventMap[payloadHash] = params;
+  outgoingEventMap["codetime_event"][payloadHash] = params;
 
   return await sendEvent(codetimePayload, contexts);
 }
@@ -127,6 +148,9 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
   const editorActionPayload: any = new EditorAction(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
+  const payloadHash = hash(editorActionPayload);
+  outgoingEventMap["editor_action_event"][payloadHash] = params;
+
   return await sendEvent(editorActionPayload, contexts);
 }
 
@@ -138,6 +162,9 @@ swdcTracker.trackGitEvent = async (params: GitEventParams): Promise<any> => {
   // build the contexts and event payload
   const gitEventPayload: any = new GitEvent(params).buildPayload();
   const contexts: any = await buildContexts(params);
+
+  const payloadHash = hash(gitEventPayload);
+  outgoingEventMap["git_event"][payloadHash] = params;
 
   return await sendEvent(gitEventPayload, contexts);
 }
@@ -151,6 +178,9 @@ swdcTracker.trackUIInteraction = async (params: UIInteractionParams): Promise<an
   // build the contexts and event payload
   const uiInteractionPayload: any = new UIInteraction(params).buildPayload();
   const contexts: any = await buildContexts(params);
+
+  const payloadHash = hash(uiInteractionPayload);
+  outgoingEventMap["ui_interaction_event"][payloadHash] = params;
 
   return await sendEvent(uiInteractionPayload, contexts);
 }
@@ -166,7 +196,7 @@ async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResp
     swdcTracker.spTracker.trackUnstructEvent(event_payload, contexts);
   } catch (e) {
     // We may get IPIPE, or ECONNRESET. Log it.
-    console.log("swdc-tracker unstruct track event error", e);
+    console.error("swdc-tracker unstruct track event error", e);
   }
 
   return success();
@@ -187,8 +217,8 @@ swdcTracker.getLastProcessedTestEvent = (): any => {
   return lastProcessedTestEvent;
 }
 
-swdcTracker.getOutgoingCodeTimeParams = (hash: string): any => {
-  return outgoingCodetimeEventMap[hash];
+swdcTracker.getOutgoingParamsData = (event_key: string, hash: string): any => {
+  return outgoingEventMap[event_key][hash];
 }
 
 export default swdcTracker;

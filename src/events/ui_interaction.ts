@@ -3,6 +3,8 @@ import { PluginInterface } from "../entities/plugin";
 import { AuthInterface } from "../entities/auth";
 
 // The UI Interaction event
+export const ui_interaction_schema = "iglu:com.software/ui_interaction/jsonschema/1-0-0";
+
 export interface UIInteractionInterface {
   interaction_type: string,
 }
@@ -20,7 +22,7 @@ export class UIInteraction implements UIInteractionInterface {
 
   buildPayload() {
     return {
-      schema: "iglu:com.software/ui_interaction/jsonschema/1-0-0",
+      schema: ui_interaction_schema,
       data: {
         interaction_type: this.interaction_type,
       }

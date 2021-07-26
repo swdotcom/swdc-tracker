@@ -1,5 +1,4 @@
 import swdcTracker, { CodeTime } from "../../src/index";
-import { buildContexts } from "../../src/utils/context_helper";
 import { TrackerResponse } from "../../src/utils/response";
 
 const hash = require("object-hash");
@@ -114,7 +113,7 @@ describe("Test codetime event functions", function () {
     const payloadHash = hash(codetimePayload);
 
     await swdcTracker.trackCodeTimeEvent(eventData);
-    const outgoingPayload = swdcTracker.getOutgoingCodeTimeParams(payloadHash);
+    const outgoingPayload = swdcTracker.getOutgoingParamsData("codetime_event", payloadHash);
 
     expect(outgoingPayload.jwt).to.eq(eventData.jwt);
     expect(outgoingPayload.end_time).to.eq(eventData.end_time);
