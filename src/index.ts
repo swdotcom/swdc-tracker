@@ -29,7 +29,7 @@ const outgoingEventReconciler = (body: any) => {
         const schmema = JSON.parse(ctPayload.ue_pr);
         // match the hash in the map then remove if found
         const ctPayloadHash = hash(schmema.data);
-        const outgoingPayload = swdcTracker.getOutgoingCodeTimeParams(ctPayloadHash);
+        const outgoingPayload = outgoingCodetimeEventMap[ctPayloadHash];
         if (outgoingPayload) {
           // remove this event from the map
           delete outgoingCodetimeEventMap[ctPayloadHash];
