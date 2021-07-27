@@ -1,6 +1,6 @@
 import { setBaseUrl, get } from "./utils/http";
 import { CodeTimeParams, CodeTime, codetime_schema } from "./events/codetime";
-import { EditorActionParams, EditorAction, editor_action_schema } from "./events/editor_action";
+import { EditorActionParams, EditorAction } from "./events/editor_action";
 import { GitEventParams, GitEvent, git_schema } from "./events/git_event";
 import { success, error, TrackerResponse } from "./utils/response";
 import { isTestMode } from "./utils/env_helper";
@@ -33,6 +33,7 @@ const outgoingEventReconciler = (body: any) => {
       const schema_data = schema_body?.data.find((schema_metadata:any) => schema_metadata.ue_pr.includes("iglu:com.software/"));
       if (schema_data) {
         const event_obj = JSON.parse(schema_data.ue_pr);
+
         // match the hash in the map then remove if found
         const payloadHash = hash(event_obj.data);
 
@@ -60,13 +61,13 @@ const outgoingEventReconciler = (body: any) => {
   }
 }
 
-// com.software/editor_action
-
 const sendPendingCodeTimeEvents = () => {
   if (outgoingEventMap) {
     Object.keys(outgoingEventMap).forEach(key => {
       const codetimeParams: any = outgoingEventMap[key];
-      swdcTracker.trackCodeTimeEvent(codetimeParams);
+      if (codetimeParams) {
+        swdcTracker.trackCodeTimeEvent(codetimeParams);
+      }
     });
   }
 }
