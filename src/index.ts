@@ -34,11 +34,9 @@ const outgoingEventReconciler = (body: any) => {
       if (schema_data) {
         const event_obj = JSON.parse(schema_data.ue_pr);
 
-        // match the hash in the map then remove if found
-        const payloadHash = hash(event_obj.data);
+        // hash the data within the event object: {data, schema}
+        const payloadHash = hash(event_obj.data.data);
 
-        // found an outgoing event
-        // default to the event that happens the most
         let event_key = "editor_action_event";
         if (schema_data.ue_pr.includes(codetime_schema)) {
           event_key = "codetime_event";
@@ -147,8 +145,8 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams, track_event: boo
   const codetimePayload: any = new CodeTime(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  if (track_event) {
-    const payloadHash = hash(codetimePayload);
+  if (track_event && codetimePayload?.data) {
+    const payloadHash = buildCompareHash(codetimePayload.data);
     outgoingEventMap["codetime_event"][payloadHash] = params;
   }
 
@@ -165,8 +163,8 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams, track_event: 
   const editorActionPayload: any = new EditorAction(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  if (track_event) {
-    const payloadHash = hash(editorActionPayload);
+  if (track_event && editorActionPayload?.data) {
+    const payloadHash = buildCompareHash(editorActionPayload.data);
     outgoingEventMap["editor_action_event"][payloadHash] = params;
   }
 
@@ -182,8 +180,8 @@ swdcTracker.trackGitEvent = async (params: GitEventParams, track_event: boolean 
   const gitEventPayload: any = new GitEvent(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  if (track_event) {
-    const payloadHash = hash(gitEventPayload);
+  if (track_event && gitEventPayload?.data) {
+    const payloadHash = buildCompareHash(gitEventPayload.data);
     outgoingEventMap["git_event"][payloadHash] = params;
   }
 
@@ -200,8 +198,8 @@ swdcTracker.trackUIInteraction = async (params: UIInteractionParams, track_event
   const uiInteractionPayload: any = new UIInteraction(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  if (track_event) {
-    const payloadHash = hash(uiInteractionPayload);
+  if (track_event && uiInteractionPayload?.data) {
+    const payloadHash = buildCompareHash(uiInteractionPayload.data);
     outgoingEventMap["ui_interaction_event"][payloadHash] = params;
   }
 
@@ -223,6 +221,19 @@ async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResp
   }
 
   return success();
+}
+
+function buildCompareHash(payload: any) {
+  const obj: any = {};
+
+  // build an object with non-undefined values
+  Object.keys(payload).forEach(metric => {
+    if (payload[metric]) {
+      obj[metric] = payload[metric];
+    }
+  });
+
+  return hash(obj);
 }
 
 function testEvent(properties: any, contexts: any): TrackerResponse {
@@ -250,6 +261,10 @@ swdcTracker.getOutgoingParamsData = (event_key: string, hash: string): any => {
 
 swdcTracker.sendOutgoingParamsData = () => {
   sendPendingCodeTimeEvents();
+}
+
+swdcTracker.getEventDataHash = (eventData: any) => {
+  return buildCompareHash(eventData);
 }
 
 export default swdcTracker;

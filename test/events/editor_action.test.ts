@@ -1,7 +1,6 @@
 import swdcTracker, { EditorAction } from "../../src/index";
 import { TrackerResponse } from "../../src/utils/response";
 
-const hash = require("object-hash");
 const http = require("../../src/utils/http");
 const expect = require("chai").expect;
 const sinon = require("sinon");
@@ -71,7 +70,7 @@ describe("Test editor action event functions", function () {
     };
 
     const editorActionPayload: any = new EditorAction(eventData).buildPayload();
-    const payloadHash = hash(editorActionPayload);
+    const payloadHash = swdcTracker.getEventDataHash(editorActionPayload.data);
 
     await swdcTracker.trackEditorAction(eventData);
 
