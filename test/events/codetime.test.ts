@@ -113,9 +113,16 @@ describe("Test codetime event functions", function () {
     const payloadHash = hash(codetimePayload);
 
     await swdcTracker.trackCodeTimeEvent(eventData);
-    const outgoingPayload = swdcTracker.getOutgoingParamsData("codetime_event", payloadHash);
+    let outgoingPayload = swdcTracker.getOutgoingParamsData("codetime_event", payloadHash);
 
     expect(outgoingPayload.jwt).to.eq(eventData.jwt);
     expect(outgoingPayload.end_time).to.eq(eventData.end_time);
+
+    // add it one more time to show we're iterating and removing from the outgoing object
+    swdcTracker.updateOutgoingParamsData("codetime_event", payloadHash, eventData);
+
+    swdcTracker.sendOutgoingParamsData();
+    outgoingPayload = swdcTracker.getOutgoingParamsData("codetime_event", payloadHash);
+    expect(outgoingPayload).to.be.undefined;
   });
 });

@@ -63,10 +63,24 @@ const outgoingEventReconciler = (body: any) => {
 
 const sendPendingCodeTimeEvents = () => {
   if (outgoingEventMap) {
-    Object.keys(outgoingEventMap).forEach(key => {
-      const codetimeParams: any = outgoingEventMap[key];
-      if (codetimeParams) {
-        swdcTracker.trackCodeTimeEvent(codetimeParams);
+    Object.keys(outgoingEventMap).forEach(event_key => {
+      const eventsMap: any = outgoingEventMap[event_key];
+      if (eventsMap && Object.keys(eventsMap).length) {
+        Object.keys(eventsMap).forEach(hash_key => {
+          const params = eventsMap[hash_key];
+          if (params) {
+            if (event_key === "editor_action_event") {
+              swdcTracker.trackEditorAction(params, false);
+            } else if (event_key === "codetime_event") {
+              swdcTracker.trackCodeTimeEvent(params, false);
+            } else if (event_key === "ui_interaction_event") {
+              swdcTracker.trackUIInteraction(params, false);
+            } else if (event_key === "git_event") {
+              swdcTracker.trackGitEvent(params, false);
+            }
+            delete eventsMap[hash_key];
+          }
+        });
       }
     });
   }
@@ -127,14 +141,16 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
 /**
  * @param codetimeEvent - the CodeTime event extends Repo, Project, File, Auth
  */
-swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> => {
+swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams, track_event: boolean = true): Promise<any> => {
 
   // build the contexts and event payload
   const codetimePayload: any = new CodeTime(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  const payloadHash = hash(codetimePayload);
-  outgoingEventMap["codetime_event"][payloadHash] = params;
+  if (track_event) {
+    const payloadHash = hash(codetimePayload);
+    outgoingEventMap["codetime_event"][payloadHash] = params;
+  }
 
   return await sendEvent(codetimePayload, contexts);
 }
@@ -143,14 +159,16 @@ swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams): Promise<any> =>
  * @param jwt - the authorization token
  * @param editorActionEvent - the DomEvent properties (extends plugin, event_meta, and time_info)
  */
-swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any> => {
+swdcTracker.trackEditorAction = async (params: EditorActionParams, track_event: boolean = true): Promise<any> => {
 
   // build the contexts and event payload
   const editorActionPayload: any = new EditorAction(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  const payloadHash = hash(editorActionPayload);
-  outgoingEventMap["editor_action_event"][payloadHash] = params;
+  if (track_event) {
+    const payloadHash = hash(editorActionPayload);
+    outgoingEventMap["editor_action_event"][payloadHash] = params;
+  }
 
   return await sendEvent(editorActionPayload, contexts);
 }
@@ -158,14 +176,16 @@ swdcTracker.trackEditorAction = async (params: EditorActionParams): Promise<any>
 /**
  * @param gitEvent - the GitEvent event extends Repo, Project, UncommittedChange, Auth
  */
-swdcTracker.trackGitEvent = async (params: GitEventParams): Promise<any> => {
+swdcTracker.trackGitEvent = async (params: GitEventParams, track_event: boolean = true): Promise<any> => {
 
   // build the contexts and event payload
   const gitEventPayload: any = new GitEvent(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  const payloadHash = hash(gitEventPayload);
-  outgoingEventMap["git_event"][payloadHash] = params;
+  if (track_event) {
+    const payloadHash = hash(gitEventPayload);
+    outgoingEventMap["git_event"][payloadHash] = params;
+  }
 
   return await sendEvent(gitEventPayload, contexts);
 }
@@ -174,14 +194,16 @@ swdcTracker.trackGitEvent = async (params: GitEventParams): Promise<any> => {
  * @param jwt - the authorization token
  * @param params - the UI Interaction params
  */
-swdcTracker.trackUIInteraction = async (params: UIInteractionParams): Promise<any> => {
+swdcTracker.trackUIInteraction = async (params: UIInteractionParams, track_event: boolean = true): Promise<any> => {
 
   // build the contexts and event payload
   const uiInteractionPayload: any = new UIInteraction(params).buildPayload();
   const contexts: any = await buildContexts(params);
 
-  const payloadHash = hash(uiInteractionPayload);
-  outgoingEventMap["ui_interaction_event"][payloadHash] = params;
+  if (track_event) {
+    const payloadHash = hash(uiInteractionPayload);
+    outgoingEventMap["ui_interaction_event"][payloadHash] = params;
+  }
 
   return await sendEvent(uiInteractionPayload, contexts);
 }
@@ -218,8 +240,16 @@ swdcTracker.getLastProcessedTestEvent = (): any => {
   return lastProcessedTestEvent;
 }
 
+swdcTracker.updateOutgoingParamsData = (event_key: string, hash: string, params: any): any => {
+  return outgoingEventMap[event_key][hash] = params;
+}
+
 swdcTracker.getOutgoingParamsData = (event_key: string, hash: string): any => {
   return outgoingEventMap[event_key][hash];
+}
+
+swdcTracker.sendOutgoingParamsData = () => {
+  sendPendingCodeTimeEvents();
 }
 
 export default swdcTracker;
