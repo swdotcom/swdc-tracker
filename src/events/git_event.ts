@@ -6,6 +6,8 @@ import { FileChangeInterface } from "../entities/file_change";
 
 
 // The EditorAction event
+export const git_schema: string = "iglu:com.software/git_event/jsonschema/1-0-0";
+
 export interface GitEventInterface {
   git_event_type: string;
   git_event_timestamp: string;
@@ -29,7 +31,7 @@ export class GitEvent implements GitEventInterface {
 
   buildPayload() {
     return {
-      schema: "iglu:com.software/git_event/jsonschema/1-0-0",
+      schema: git_schema,
       data: {
         git_event_type: this.git_event_type,
         git_event_timestamp: this.git_event_timestamp,

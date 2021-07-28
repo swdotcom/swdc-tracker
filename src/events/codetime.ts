@@ -5,6 +5,8 @@ import { PluginInterface } from "../entities/plugin";
 import { AuthInterface } from "../entities/auth";
 
 // The CodeTime event
+export const codetime_schema: string = "iglu:com.software/codetime/jsonschema/1-0-2";
+
 export interface CodeTimeInterface {
   keystrokes: number,
   lines_added: number,
@@ -59,7 +61,7 @@ export class CodeTime implements CodeTimeInterface {
   buildPayload() {
 
     return {
-      schema: "iglu:com.software/codetime/jsonschema/1-0-2",
+      schema: codetime_schema,
       data: {
         keystrokes: this.keystrokes,
         lines_added: this.lines_added,
