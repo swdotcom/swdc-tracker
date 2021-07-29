@@ -1,7 +1,6 @@
 import swdcTracker, { CodeTime } from "../../src/index";
 import { TrackerResponse } from "../../src/utils/response";
 
-const hash = require("object-hash");
 const http = require("../../src/utils/http");
 const expect = require("chai").expect;
 const sinon = require("sinon");
@@ -110,7 +109,7 @@ describe("Test codetime event functions", function () {
     };
 
     const codetimePayload: any = new CodeTime(eventData).buildPayload();
-    const payloadHash = hash(codetimePayload);
+    const payloadHash = swdcTracker.getEventDataHash(codetimePayload.data);
 
     await swdcTracker.trackCodeTimeEvent(eventData);
     let outgoingPayload = swdcTracker.getOutgoingParamsData("codetime_event", payloadHash);
