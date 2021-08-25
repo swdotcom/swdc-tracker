@@ -9,7 +9,7 @@ import { buildContexts } from "./utils/context_helper";
 
 const hash = require("object-hash");
 
-const snowplow = require("snowplow-tracker");
+const snowplow = require("@snowplow/node-tracker");
 const emitter = snowplow.emitter;
 const tracker = snowplow.tracker;
 const swdcTracker = <any>{};
