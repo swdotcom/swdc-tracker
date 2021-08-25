@@ -6,7 +6,7 @@ import { success, error, TrackerResponse } from "./utils/response";
 import { isTestMode } from "./utils/env_helper";
 import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
 import { buildContexts } from "./utils/context_helper";
-import { tracker, gotEmitter, HttpMethod } from '@snowplow/node-tracker';
+import { tracker, gotEmitter, HttpMethod, buildSelfDescribingEvent } from '@snowplow/node-tracker';
 
 const hash = require("object-hash");
 
@@ -99,8 +99,7 @@ async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResp
   }
 
   try {
-    // use the error callback to handle any errors
-    swdcTracker.spTracker.trackUnstructEvent(event_payload, contexts);
+    swdcTracker.spTracker.track(buildSelfDescribingEvent({event: event_payload}), contexts);
   } catch (e) {
     // We may get IPIPE, or ECONNRESET. Log it.
     console.error("swdc-tracker unstruct track event error", e);

@@ -84,4 +84,8 @@ describe("Test codetime event functions", function () {
     expect(projectContext.data.project_name).to.be.a('string').that.matches(/^[a-f0-9]{128}$/);
     expect(projectContext.data.project_directory).to.be.a('string').that.matches(/^[a-f0-9]{128}$/);
   });
+
+  it("Validates snowplow tracker has the track function", function() {
+    expect(typeof swdcTracker.spTracker.track).to.eql("function");
+  });
 });
