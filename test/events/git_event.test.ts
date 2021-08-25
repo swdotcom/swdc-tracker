@@ -1,4 +1,3 @@
-import { GitEvent, GitEventInterface } from "../../src/events/git_event";
 import swdcTracker from "../../src/index";
 import { TrackerResponse } from "../../src/utils/response";
 
@@ -115,19 +114,6 @@ describe("Test git_event functions", function () {
 
       expect(http.post).to.not.have
         .been.calledWith("/user_encrypted_data", sinon.match.any, sinon.match.any)
-    });
-
-    it("Stores the git event params to reconcile", async function () {
-      const eventData: any = {
-        git_event_type: "uncommitted_change"
-      };
-
-      const gitEventPayload: any = new GitEvent(eventData).buildPayload();
-      const payloadHash = swdcTracker.getEventDataHash(gitEventPayload.data);
-      await swdcTracker.trackGitEvent(eventData);
-
-      const outgoingPayload = swdcTracker.getOutgoingParamsData("git_event", payloadHash);
-      expect(outgoingPayload.git_event_type).to.eq("uncommitted_change");
     });
   });
 });
