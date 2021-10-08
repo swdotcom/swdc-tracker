@@ -37,7 +37,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     }
 
     return success();
-  } catch (e) {
+  } catch (e: any) {
     return error(500, e, `Failed to initialize. ${e.message}`);
   }
 };
