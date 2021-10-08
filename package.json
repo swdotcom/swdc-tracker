@@ -1,6 +1,6 @@
 {
   "name": "swdc-tracker",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "description": "swdc event tracker",
   "main": "dist",
   "types": "dist/index.d.js",
@@ -21,13 +21,13 @@
     "mocha": "^8.0.1",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.5"
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
   },
   "dependencies": {
-    "@snowplow/node-tracker": "^3.1.3",
-    "@types/node": "^16.7.1",
-    "axios": "^0.21.1",
+    "@snowplow/node-tracker": "^3.1.5",
+    "@types/node": "^16.10.3",
+    "axios": "^ 0.22.0",
     "file-it": "^1.1.2",
     "libsodium": "^0.7.9",
     "libsodium-wrappers": "^0.7.9",
