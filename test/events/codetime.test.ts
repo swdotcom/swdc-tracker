@@ -1,36 +1,35 @@
-import swdcTracker from "../../src/index";
-import { TrackerResponse } from "../../src/utils/response";
+import swdcTracker from '../../src/index';
+import {TrackerResponse} from '../../src/utils/response';
 
-const http = require("../../src/utils/http");
-const expect = require("chai").expect;
-const sinon = require("sinon");
+const http = require('../../src/utils/http');
+const expect = require('chai').expect;
+const sinon = require('sinon');
 
-describe("Test codetime event functions", function () {
-
+describe('Test codetime event functions', function () {
   const sandbox = sinon.createSandbox();
 
   before(async () => {
     // return any api since we're not really trying to call out
-    sandbox.stub(http, "get").callsFake(function () {
+    sandbox.stub(http, 'get').callsFake(function () {
       return {
         data: {
-          tracker_api: "localhost"
-        }
-      }
+          tracker_api: 'localhost',
+        },
+      };
     });
-    sandbox.stub(http, "post").callsFake(function () {
-      return { status: 201 }
+    sandbox.stub(http, 'post').callsFake(function () {
+      return {status: 201};
     });
-    await swdcTracker.initialize("localhost:5005", "codetime", "swdotcom-vscode");
+    await swdcTracker.initialize('localhost:5005', 'codetime', 'swdotcom-vscode');
   });
 
   after(() => {
     sandbox.restore();
   });
 
-  it("Validate creating a codetime payload", async function () {
+  it('Validate creating a codetime payload', async function () {
     const eventData = {
-      jwt: "JWT 123",
+      jwt: 'JWT 123',
       keystrokes: 20,
       lines_added: 2,
       lines_deleted: 3,
@@ -42,13 +41,15 @@ describe("Test codetime event functions", function () {
       multi_adds: 12,
       auto_indents: 14,
       replacements: 99,
-      start_time: "2020-07-29T01:04:03Z",
-      end_time: "2020-07-29T01:04:20Z",
+      start_time: '2020-07-29T01:04:03Z',
+      end_time: '2020-07-29T01:04:20Z',
       plugin_id: 4,
-      plugin_name: "code-time",
-      plugin_version: "2.1.999",
-      project_name: "foo",
-      project_directory: "baz"
+      plugin_name: 'code-time',
+      plugin_version: '2.1.999',
+      project_name: 'foo',
+      project_directory: 'baz',
+      editor_name: 'vscode',
+      editor_version: '1.61.0',
     };
     const response: TrackerResponse = await swdcTracker.trackCodeTimeEvent(eventData);
 
@@ -61,7 +62,7 @@ describe("Test codetime event functions", function () {
     const contexts = lastProcessedTestEvent.contexts;
 
     // SCHEMA validation "codetime"
-    expect(props.schema).to.include("codetime");
+    expect(props.schema).to.include('codetime');
     expect(props.data.keystrokes).to.equal(20);
     expect(props.data.lines_added).to.equal(2);
     expect(props.data.lines_deleted).to.equal(3);
@@ -73,19 +74,25 @@ describe("Test codetime event functions", function () {
     expect(props.data.multi_adds).to.equal(12);
     expect(props.data.auto_indents).to.equal(14);
     expect(props.data.replacements).to.equal(99);
-    expect(props.data.start_time).to.equal("2020-07-29T01:04:03Z");
-    expect(props.data.end_time).to.equal("2020-07-29T01:04:20Z");
+    expect(props.data.start_time).to.equal('2020-07-29T01:04:03Z');
+    expect(props.data.end_time).to.equal('2020-07-29T01:04:20Z');
     // get the plugin context
-    const pluginContext: any = contexts.find((n: any) => n.schema.includes("plugin"));
+    const pluginContext: any = contexts.find((n: any) => n.schema.includes('plugin'));
     expect(pluginContext.data.plugin_id).to.equal(4);
-    expect(pluginContext.data.plugin_name).to.equal("code-time");
-    expect(pluginContext.data.plugin_version).to.equal("2.1.999");
-    const projectContext: any = contexts.find((n: any) => n.schema.includes("project"));
-    expect(projectContext.data.project_name).to.be.a('string').that.matches(/^[a-f0-9]{128}$/);
-    expect(projectContext.data.project_directory).to.be.a('string').that.matches(/^[a-f0-9]{128}$/);
+    expect(pluginContext.data.plugin_name).to.equal('code-time');
+    expect(pluginContext.data.plugin_version).to.equal('2.1.999');
+    expect(pluginContext.data.editor_name).to.equal('vscode');
+    expect(pluginContext.data.editor_version).to.equal('1.61.0');
+    const projectContext: any = contexts.find((n: any) => n.schema.includes('project'));
+    expect(projectContext.data.project_name)
+      .to.be.a('string')
+      .that.matches(/^[a-f0-9]{128}$/);
+    expect(projectContext.data.project_directory)
+      .to.be.a('string')
+      .that.matches(/^[a-f0-9]{128}$/);
   });
 
-  it("Validates snowplow tracker has the track function", function() {
-    expect(typeof swdcTracker.spTracker.track).to.eql("function");
+  it('Validates snowplow tracker has the track function', function () {
+    expect(typeof swdcTracker.spTracker.track).to.eql('function');
   });
 });
