@@ -1,12 +1,12 @@
-import { UIElementInterface } from "../entities/ui_element";
-import { PluginInterface } from "../entities/plugin";
-import { AuthInterface } from "../entities/auth";
+import {UIElementInterface} from '../entities/ui_element';
+import {PluginInterface} from '../entities/plugin';
+import {AuthInterface} from '../entities/auth';
 
 // The UI Interaction event
-export const ui_interaction_schema = "iglu:com.software/ui_interaction/jsonschema/1-0-0";
+export const ui_interaction_schema = 'iglu:com.software/ui_interaction/jsonschema/1-0-0';
 
 export interface UIInteractionInterface {
-  interaction_type: string,
+  interaction_type: string;
 }
 
 export class UIInteraction implements UIInteractionInterface {
@@ -25,10 +25,13 @@ export class UIInteraction implements UIInteractionInterface {
       schema: ui_interaction_schema,
       data: {
         interaction_type: this.interaction_type,
-      }
-    }
+      },
+    };
   }
 }
 
-export interface UIInteractionParams extends
-  AuthInterface, PluginInterface, UIElementInterface, UIInteractionInterface { }
+export interface UIInteractionParams
+  extends AuthInterface,
+    PluginInterface,
+    UIElementInterface,
+    UIInteractionInterface {}

@@ -1,9 +1,9 @@
-import { hashAndEncryptValues } from "../utils/hash";
+import {hashAndEncryptValues} from '../utils/hash';
 
 // The project entity
 export interface ProjectInterface {
-  project_name: string,
-  project_directory: string
+  project_name: string;
+  project_directory: string;
 }
 
 export class Project implements ProjectInterface {
@@ -20,17 +20,20 @@ export class Project implements ProjectInterface {
   }
 
   async buildPayload(jwt: string) {
-    const hashedValues = await hashAndEncryptValues([
-      { value: this.project_name, dataType: "project_name" },
-      { value: this.project_directory, dataType: "project_directory" }
-    ], jwt)
+    const hashedValues = await hashAndEncryptValues(
+      [
+        {value: this.project_name, dataType: 'project_name'},
+        {value: this.project_directory, dataType: 'project_directory'},
+      ],
+      jwt
+    );
 
     return {
-      schema: "iglu:com.software/project/jsonschema/1-0-0",
+      schema: 'iglu:com.software/project/jsonschema/1-0-0',
       data: {
         project_name: hashedValues.project_name,
-        project_directory: hashedValues.project_directory
-      }
-    }
+        project_directory: hashedValues.project_directory,
+      },
+    };
   }
 }

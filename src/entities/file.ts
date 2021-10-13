@@ -1,5 +1,5 @@
-import { hashAndEncryptValues } from "../utils/hash";
-import { convertWinPathToUnix } from "../utils/common_helper";
+import {hashAndEncryptValues} from '../utils/hash';
+import {convertWinPathToUnix} from '../utils/common_helper';
 
 // The file entity
 export interface FileInterface {
@@ -32,14 +32,14 @@ export class File implements FileInterface {
   async buildPayload(jwt: string) {
     const hashedValues = await hashAndEncryptValues(
       [
-        { value: convertWinPathToUnix(this.file_name), dataType: "file_name" },
-        { value: this.file_path, dataType: "file_path" },
+        {value: convertWinPathToUnix(this.file_name), dataType: 'file_name'},
+        {value: this.file_path, dataType: 'file_path'},
       ],
       jwt
     );
 
     return {
-      schema: "iglu:com.software/file/jsonschema/1-0-1",
+      schema: 'iglu:com.software/file/jsonschema/1-0-1',
       data: {
         file_name: hashedValues.file_name,
         file_path: hashedValues.file_path,

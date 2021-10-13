@@ -1,26 +1,26 @@
-import { RepoInterface } from "../entities/repo";
-import { ProjectInterface } from "../entities/project";
-import { FileInterface } from "../entities/file";
-import { PluginInterface } from "../entities/plugin";
-import { AuthInterface } from "../entities/auth";
+import {RepoInterface} from '../entities/repo';
+import {ProjectInterface} from '../entities/project';
+import {FileInterface} from '../entities/file';
+import {PluginInterface} from '../entities/plugin';
+import {AuthInterface} from '../entities/auth';
 
 // The CodeTime event
-export const codetime_schema: string = "iglu:com.software/codetime/jsonschema/1-0-2";
+export const codetime_schema: string = 'iglu:com.software/codetime/jsonschema/1-0-2';
 
 export interface CodeTimeInterface {
-  keystrokes: number,
-  lines_added: number,
-  lines_deleted: number,
-  characters_added: number,
-  characters_deleted: number,
-  single_deletes: number,
-  multi_deletes: number,
-  single_adds: number,
-  multi_adds: number,
-  auto_indents: number,
-  replacements: number,
-  start_time: number,
-  end_time: number
+  keystrokes: number;
+  lines_added: number;
+  lines_deleted: number;
+  characters_added: number;
+  characters_deleted: number;
+  single_deletes: number;
+  multi_deletes: number;
+  single_adds: number;
+  multi_adds: number;
+  auto_indents: number;
+  replacements: number;
+  start_time: string;
+  end_time: string;
 }
 
 export class CodeTime implements CodeTimeInterface {
@@ -35,8 +35,8 @@ export class CodeTime implements CodeTimeInterface {
   public multi_adds: number;
   public auto_indents: number;
   public replacements: number;
-  public start_time: number;
-  public end_time: number;
+  public start_time: string;
+  public end_time: string;
 
   constructor(data: CodeTimeInterface) {
     this.keystrokes = data.keystrokes;
@@ -59,7 +59,6 @@ export class CodeTime implements CodeTimeInterface {
   }
 
   buildPayload() {
-
     return {
       schema: codetime_schema,
       data: {
@@ -75,11 +74,16 @@ export class CodeTime implements CodeTimeInterface {
         auto_indents: this.auto_indents,
         replacements: this.replacements,
         start_time: this.start_time,
-        end_time: this.end_time
-      }
-    }
+        end_time: this.end_time,
+      },
+    };
   }
 }
 
-export interface CodeTimeParams extends
-  AuthInterface, PluginInterface, RepoInterface, ProjectInterface, FileInterface, CodeTimeInterface { }
+export interface CodeTimeParams
+  extends AuthInterface,
+    PluginInterface,
+    RepoInterface,
+    ProjectInterface,
+    FileInterface,
+    CodeTimeInterface {}

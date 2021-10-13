@@ -1,4 +1,4 @@
-import swdcTracker from '../../src/index';
+import swdcTracker, {CodeTimeInterface, CodeTimeParams} from '../../src/index';
 import {TrackerResponse} from '../../src/utils/response';
 
 const http = require('../../src/utils/http');
@@ -28,7 +28,7 @@ describe('Test codetime event functions', function () {
   });
 
   it('Validate creating a codetime payload', async function () {
-    const eventData = {
+    const eventData: CodeTimeParams = {
       jwt: 'JWT 123',
       keystrokes: 20,
       lines_added: 2,
@@ -50,6 +50,16 @@ describe('Test codetime event functions', function () {
       project_directory: 'baz',
       editor_name: 'vscode',
       editor_version: '1.61.0',
+      repo_identifier: '',
+      syntax: '',
+      line_count: 199,
+      character_count: 300,
+      repo_name: '',
+      owner_id: '',
+      git_branch: '',
+      git_tag: '',
+      file_name: '',
+      file_path: '',
     };
     const response: TrackerResponse = await swdcTracker.trackCodeTimeEvent(eventData);
 

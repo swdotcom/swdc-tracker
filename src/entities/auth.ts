@@ -1,6 +1,6 @@
 // The auth entity
 export interface AuthInterface {
-  jwt: string
+  jwt: string;
 }
 
 export class Auth implements AuthInterface {
@@ -12,10 +12,10 @@ export class Auth implements AuthInterface {
 
   buildPayload() {
     return {
-      schema: "iglu:com.software/auth/jsonschema/1-0-0",
+      schema: 'iglu:com.software/auth/jsonschema/1-0-0',
       data: {
-        jwt: this.jwt
-      }
-    }
+        jwt: this.jwt,
+      },
+    };
   }
 }
