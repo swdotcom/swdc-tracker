@@ -406,10 +406,10 @@ escape-string-regexp@4.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
   integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
-file-it@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/file-it/-/file-it-1.1.2.tgz#147a53d81e27ce5ee098d1f39a74828c9b302437"
-  integrity sha512-q3BwbtstLid6Buz/ECVQB+GASZmHaukHKzivi04mH5aNsuOSpVZDZCQCbW6PoiVnlvRvEZjTTHySuW8ZDZkAkQ==
+file-it@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/file-it/-/file-it-1.1.5.tgz#8df20965deac400c6b073dd96de1fc5b5af42c5a"
+  integrity sha512-OynZKH7VXn7pSzK2tS7gGJ7i+eQ7326SfCtafbjmpVdza+j+wk4kJ6XZNOrdrYPnl9kgnAnbGX1AzwqPwymiDQ==
   dependencies:
     "@types/universalify" "^1.0.0"
     universalify "^2.0.0"
