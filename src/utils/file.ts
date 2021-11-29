@@ -1,14 +1,31 @@
 const os = require("os");
 const fs = require("fs");
-const fileIt = require("file-it");
 import { isTestMode } from "./env_helper";
 
 export async function storeHashedValues(userHashedValues: any) {
-  fileIt.writeJsonFileSync(getSoftwareHashedValuesFile(), userHashedValues);
+  try {
+    const content: string = JSON.stringify(userHashedValues);
+    fs.writeFileSync(getSoftwareHashedValuesFile(), content, { encoding: 'utf8' });
+  } catch (e: any) {
+    console.error(`Unable to write hashed values: ${e.message}`);
+  }
 }
 
 export function getStoredHashedValues() {
-  return fileIt.readJsonFileSync(getSoftwareHashedValuesFile());
+  const filePath = getSoftwareHashedValuesFile();
+  let content: string = fs.readFileSync(filePath, { encoding: 'utf8' });
+  try {
+    return JSON.parse(content);
+  } catch (e: any) {
+    console.error(`Unable to read file info: ${e.message}`);
+    storeHashedValues({});
+    try {
+      return JSON.parse(content);
+    } catch (e: any) {
+      console.error(`Unable to read file info: ${e.message}`);
+    }
+  }
+  return null;
 }
 
 export function getFile(name: string) {
