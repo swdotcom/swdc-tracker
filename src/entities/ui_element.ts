@@ -1,10 +1,10 @@
 // The ui_element interface
 export interface UIElementInterface {
-  element_name: string,
-  element_location: string,
-  color: string,
-  icon_name: string,
-  cta_text: string
+  element_name: string;
+  element_location: string;
+  color: string;
+  icon_name: string;
+  cta_text: string;
 }
 
 export class UIElement implements UIElementInterface {
@@ -28,14 +28,14 @@ export class UIElement implements UIElementInterface {
 
   async buildPayload() {
     return {
-      schema: "iglu:com.software/ui_element/jsonschema/1-0-5",
+      schema: 'iglu:com.software/ui_element/jsonschema/1-0-5',
       data: {
         element_name: this.element_name,
         element_location: this.element_location,
         color: this.color,
         icon_name: this.icon_name,
-        cta_text: this.cta_text
-      }
-    }
+        cta_text: this.cta_text,
+      },
+    };
   }
 }

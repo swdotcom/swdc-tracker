@@ -1,12 +1,11 @@
-import { PluginInterface } from "../entities/plugin";
-import { ProjectInterface } from "../entities/project";
-import { AuthInterface } from "../entities/auth";
-import { RepoInterface } from "../entities/repo";
-import { FileChangeInterface } from "../entities/file_change";
-
+import {PluginInterface} from '../entities/plugin';
+import {ProjectInterface} from '../entities/project';
+import {AuthInterface} from '../entities/auth';
+import {RepoInterface} from '../entities/repo';
+import {FileChangeInterface} from '../entities/file_change';
 
 // The EditorAction event
-export const git_schema: string = "iglu:com.software/git_event/jsonschema/1-0-0";
+export const git_schema: string = 'iglu:com.software/git_event/jsonschema/1-0-0';
 
 export interface GitEventInterface {
   git_event_type: string;
@@ -35,7 +34,7 @@ export class GitEvent implements GitEventInterface {
       data: {
         git_event_type: this.git_event_type,
         git_event_timestamp: this.git_event_timestamp,
-        commit_id: this.commit_id
+        commit_id: this.commit_id,
       },
     };
   }
@@ -43,8 +42,8 @@ export class GitEvent implements GitEventInterface {
 
 export interface GitEventParams
   extends AuthInterface,
-  RepoInterface,
-  PluginInterface,
-  ProjectInterface,
-  FileChangeInterface,
-  GitEventInterface { }
+    RepoInterface,
+    PluginInterface,
+    ProjectInterface,
+    FileChangeInterface,
+    GitEventInterface {}

@@ -1,11 +1,11 @@
-import { PluginInterface } from "../entities/plugin";
-import { FileInterface } from "../entities/file";
-import { ProjectInterface } from "../entities/project";
-import { AuthInterface } from "../entities/auth";
-import { RepoInterface } from "../entities/repo";
+import {PluginInterface} from '../entities/plugin';
+import {FileInterface} from '../entities/file';
+import {ProjectInterface} from '../entities/project';
+import {AuthInterface} from '../entities/auth';
+import {RepoInterface} from '../entities/repo';
 
 // The EditorAction event
-export const editor_action_schema: string = "iglu:com.software/editor_action/jsonschema/1-0-2";
+export const editor_action_schema: string = 'iglu:com.software/editor_action/jsonschema/1-0-2';
 
 export interface EditorActionInterface {
   entity: string;
@@ -30,7 +30,7 @@ export class EditorAction implements EditorActionInterface {
       schema: editor_action_schema,
       data: {
         entity: this.entity,
-        type: this.type
+        type: this.type,
       },
     };
   }
@@ -38,8 +38,8 @@ export class EditorAction implements EditorActionInterface {
 
 export interface EditorActionParams
   extends AuthInterface,
-  RepoInterface,
-  PluginInterface,
-  FileInterface,
-  ProjectInterface,
-  EditorActionInterface { }
+    RepoInterface,
+    PluginInterface,
+    FileInterface,
+    ProjectInterface,
+    EditorActionInterface {}
