@@ -3,12 +3,7 @@ const fs = require("fs");
 import { isTestMode } from "./env_helper";
 
 export async function storeHashedValues(userHashedValues: any) {
-  try {
-    const content: string = JSON.stringify(userHashedValues);
-    fs.writeFileSync(getSoftwareHashedValuesFile(), content, { encoding: 'utf8' });
-  } catch (e: any) {
-    console.error(`Unable to write hashed values: ${e.message}`);
-  }
+  storeJsonData(userHashedValues);
 }
 
 export function getStoredHashedValues() {
@@ -19,22 +14,32 @@ export function getStoredHashedValues() {
   } catch (e: any) {
     console.error(`Unable to read file info: ${e.message}`);
     storeHashedValues({});
+    content = fs.readFileSync(filePath, { encoding: 'utf8' });
     try {
       return JSON.parse(content);
     } catch (e: any) {
       console.error(`Unable to read file info: ${e.message}`);
     }
   }
-  return null;
+  return {};
 }
 
-export function getFile(name: string) {
-  let file_path = getSoftwareDir();
-  if (isWindows()) {
-      return `${file_path}\\${name}`;
+export function getFile(name: string, default_data: any = {}) {
+  const file_path = getSoftwareDir();
+  const file = isWindows() ? `${file_path}\\${name}` : `${file_path}/${name}`;
+  if (!fs.existsSync(file)) {
+    storeJsonData(default_data);
   }
+  return file;
+}
 
-  return `${file_path}/${name}`;
+function storeJsonData(data: any) {
+  try {
+    const content: string = JSON.stringify(data);
+    fs.writeFileSync(getSoftwareHashedValuesFile(), content, { encoding: 'utf8' });
+  } catch (e: any) {
+    console.error(`Unable to write file data: ${e.message}`);
+  }
 }
 
 export function isWindows() {
