@@ -11,16 +11,18 @@ describe("file util", function () {
     deleteHashedFile();
   });
 
-  it("returns an empty hash", async function() {
-    const hashedVals = getStoredHashedValues();
-    expect(Object.keys(hashedVals).length).to.eq(0);
-  });
+  context("when no file exists", function() {
+    it("returns an empty hash", async function() {
+      const hashedVals = getStoredHashedValues();
+      expect(Object.keys(hashedVals).length).to.eq(0);
+    });
 
-  it("returns an hash with a file value", async function() {
-    storeHashedValues({'file1': 'value1'});
-    const hashedVals = getStoredHashedValues();
+    it("returns an hash with a file value", async function() {
+      storeHashedValues({'file1': 'value1'});
+      const hashedVals = getStoredHashedValues();
 
-    expect(hashedVals['file1']).to.eq('value1');
+      expect(hashedVals['file1']).to.eq('value1');
+    });
   });
 });
 
