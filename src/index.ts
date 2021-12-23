@@ -26,7 +26,12 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     const tracker_url_scheme = result.data.tracker_url_scheme || "https";
     // initialize snowplow tracker
     // endpoint, protocol, port, method, buffer, retry number (max of 2)
-    const e = gotEmitter(tracker_api_host, tracker_url_scheme, 443, HttpMethod.POST, 0, 2);
+    const completionHandler = function(error?: any, response?: any) {
+      if (error) {
+        console.error("swdc-tracker unstruct track event error", error);
+      }
+    }
+    const e = gotEmitter(tracker_api_host, tracker_url_scheme, 443, HttpMethod.POST, 0, 2, undefined, completionHandler);
 
     swdcTracker.spTracker = tracker([e], namespace, appId, false)
     swdcTracker.spTracker.setPlatform('iot');
@@ -46,11 +51,9 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
  * @param codetimeEvent - the CodeTime event extends Repo, Project, File, Auth
  */
 swdcTracker.trackCodeTimeEvent = async (params: CodeTimeParams, track_event: boolean = true): Promise<any> => {
-
   // build the contexts and event payload
   const codetimePayload: any = new CodeTime(params).buildPayload();
   const contexts: any = await buildContexts(params);
-
   return await sendEvent(codetimePayload, contexts);
 }
 
