@@ -55,7 +55,7 @@ export class CodeTime implements CodeTimeInterface {
   }
 
   static hasData(data: CodeTimeInterface) {
-    return data.start_time;
+    return data.start_time && data.end_time;
   }
 
   buildPayload() {
