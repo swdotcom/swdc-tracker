@@ -16,7 +16,9 @@ describe("file util", function () {
       const hashedVals = getStoredHashedValues();
       expect(Object.keys(hashedVals).length).to.eq(0);
     });
+  });
 
+  context("when the file already exists", function() {
     it("returns an hash with a file value", async function() {
       storeHashedValues({'file1': 'value1'});
       const hashedVals = getStoredHashedValues();

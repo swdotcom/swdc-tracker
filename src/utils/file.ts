@@ -24,10 +24,11 @@ export function getStoredHashedValues() {
   return {};
 }
 
-export function getFile(name: string, default_data: any = {}) {
+export function getFile(name: string, default_data: any = null) {
   const file_path = getSoftwareDir();
   const file = isWindows() ? `${file_path}\\${name}` : `${file_path}/${name}`;
-  if (!fs.existsSync(file)) {
+  if (!fs.existsSync(file) && default_data) {
+    // create the file since we have default data and it currently doesn't exist
     storeJsonData(default_data);
   }
   return file;
@@ -67,5 +68,5 @@ export function getSoftwareDir(autoCreate = true) {
 }
 
 export function getSoftwareHashedValuesFile() {
-  return getFile("hashed_values.json");
+  return getFile("hashed_values.json", {});
 }
