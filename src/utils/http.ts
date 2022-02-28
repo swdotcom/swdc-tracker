@@ -7,7 +7,7 @@ let axiosClient: any = {};
 export function setBaseUrl(url: string) {
   axiosClient = axios.create({
     baseURL: url,
-    timeout: 30000 // timeout so we're not getting ECONNRESET
+    timeout: 30000
   });
 
   // set the tracker version and ID
