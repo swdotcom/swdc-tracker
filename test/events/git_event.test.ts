@@ -1,4 +1,4 @@
-import swdcTracker from "../../src/index";
+import swdcTracker, { Repo } from "../../src/index";
 import { TrackerResponse } from "../../src/utils/response";
 
 const http = require("../../src/utils/http");
@@ -32,7 +32,7 @@ describe("Test git_event functions", function () {
   });
 
   context("with a valid payload", async function() {
-    const eventData = {
+    const eventData: any = {
       git_event_type: "uncommitted_change",
       jwt: "JWT 123",
       file_changes: [
@@ -71,6 +71,24 @@ describe("Test git_event functions", function () {
       expect(props.schema).to.include("git_event");
       expect(props.data.git_event_type).to.equal("uncommitted_change");
     });
+
+    it("has all of the repo properties", async function() {
+      await swdcTracker.trackGitEvent(eventData);
+      const repoPayload = await new Repo(eventData).buildPayload(eventData.jwt);
+      const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
+      const repoContext = lastProcessedTestEvent.contexts.find((n: any) => n.schema == 'iglu:com.software/repo/jsonschema/1-0-0')
+
+      // use Deep Equality "eql"
+      expect(repoContext.data).to.eql(repoPayload.data);
+    })
+
+    it("repo_identifier is not undefined", async function() {
+      await swdcTracker.trackGitEvent(eventData);
+      const lastProcessedTestEvent = swdcTracker.getLastProcessedTestEvent();
+      const repoContext = lastProcessedTestEvent.contexts.find((n: any) => n.schema == 'iglu:com.software/repo/jsonschema/1-0-0')
+
+      expect(repoContext.data.repo_identifier).to.not.equal(undefined);
+    })
 
     it("sets multiple file_change entities", async function () {
       await swdcTracker.trackGitEvent(eventData);
