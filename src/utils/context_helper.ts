@@ -5,6 +5,7 @@ import { File } from "../entities/file";
 import { Plugin } from "../entities/plugin";
 import { UIElement } from "../entities/ui_element";
 import { FileChange } from "../entities/file_change";
+import { VSCodeExtension } from '../entities/vscode_extension';
 
 /**
  * Build the snowplow payloads based on params available
@@ -50,6 +51,12 @@ export async function buildContexts(params: any) {
       if (FileChange.hasData(change))
         contexts.push(await new FileChange(change).buildPayload(params.jwt));
     }
+  }
+
+  // vscode extension event
+  if (VSCodeExtension.hasData(params)) {
+    const _vscodeExtension = await new VSCodeExtension(params).buildPayload();
+    contexts.push(_vscodeExtension);
   }
 
   // Auth is required

@@ -7,6 +7,7 @@ import { isTestMode } from "./utils/env_helper";
 import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
 import { buildContexts } from "./utils/context_helper";
 import { tracker, gotEmitter, HttpMethod, buildSelfDescribingEvent } from '@snowplow/node-tracker';
+import { VSCodeExtensionEvent, VSCodeExtensionEventParams } from './events/vscode_extension_event';
 
 const hash = require("object-hash");
 
@@ -95,10 +96,21 @@ swdcTracker.trackUIInteraction = async (params: UIInteractionParams, track_event
   return await sendEvent(uiInteractionPayload, contexts);
 }
 
+/**
+ * @param jwt - the authorization token
+ * @param params - the VSCodeExtensionEvent params
+ */
+swdcTracker.trackVSCodeExtension = async (params: VSCodeExtensionEventParams): Promise<any> => {
+  const vscodeExtensionPayload: any = new VSCodeExtensionEvent(params).buildPayload();
+  const contexts: any = await buildContexts(params);
+
+  return await sendEvent(vscodeExtensionPayload, contexts);
+}
+
 async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResponse> {
   if (isTestMode()) {
     // test mode - console log the event
-    return testEvent(event_payload, contexts);
+    return await testEvent(event_payload, contexts);
   }
 
   try {
@@ -147,9 +159,11 @@ export default swdcTracker;
 export * from "./events/codetime";
 export * from "./events/editor_action";
 export * from "./events/ui_interaction";
+export * from "./events/vscode_extension_event";
 export * from "./entities/auth";
 export * from "./entities/file";
 export * from "./entities/plugin";
 export * from "./entities/project";
 export * from "./entities/repo";
 export * from "./entities/ui_element";
+export * from "./entities/vscode_extension";
