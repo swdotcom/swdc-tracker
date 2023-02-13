@@ -110,7 +110,7 @@ swdcTracker.trackVSCodeExtension = async (params: VSCodeExtensionEventParams): P
 async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResponse> {
   if (isTestMode()) {
     // test mode - console log the event
-    return await testEvent(event_payload, contexts);
+    return testEvent(event_payload, contexts);
   }
 
   try {
