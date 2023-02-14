@@ -1,4 +1,4 @@
-import swdcTracker, {CodeTimeInterface, CodeTimeParams} from '../../src/index';
+import swdcTracker, {CodeTimeParams} from '../../src/index';
 import {TrackerResponse} from '../../src/utils/response';
 
 const http = require('../../src/utils/http');
