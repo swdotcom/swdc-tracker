@@ -108,9 +108,6 @@ swdcTracker.trackVSCodeExtension = async (params: VSCodeExtensionEventParams): P
 }
 
 async function sendEvent(event_payload: any, contexts: any): Promise<TrackerResponse> {
-  const describingEvents = buildSelfDescribingEvent({event: event_payload})
-  console.log('sending describingEvents', describingEvents);
-  console.log('sending contexts', contexts);
   if (isTestMode()) {
     // test mode - console log the event
     return testEvent(event_payload, contexts);
