@@ -39,15 +39,17 @@ describe('VSCode Extension Event', function () {
       action: 'installed',
       event_at: '2023-02-13T04:00:00Z',
       os: 'Darwin_22.1.0_darwin',
-      id: 'softwaredotcom.swdc-vscode',
-      publisher: 'softwaredotcom',
-      name: 'swdc-vscode',
-      display_name: 'Code Time',
-      author: 'Software.com',
-      version: '2.6.44',
-      description: 'Code Time is an open source plugin that provides programming metrics right in Visual Studio Code.',
-      categories: ["Other"],
-      extension_kind: ["ui", "workspace"]
+      vscode_extension: {
+        id: 'softwaredotcom.swdc-vscode',
+        publisher: 'softwaredotcom',
+        name: 'swdc-vscode',
+        display_name: 'Code Time',
+        author: 'Software.com',
+        version: '2.6.44',
+        description: 'Code Time is an open source plugin that provides programming metrics right in Visual Studio Code.',
+        categories: ["Other"],
+        extension_kind: ["ui", "workspace"]
+      }
     };
 
     it('returns a 200 status', async function () {
@@ -69,7 +71,27 @@ describe('VSCode Extension Event', function () {
       const contexts = swdcTracker.getLastProcessedTestEvent().contexts;
       const vscodeExtensionContext: any = contexts.find((n: any) => n.schema.includes('vscode_extension'));
 
-      expect(eventData).to.include(vscodeExtensionContext.data);
+      expect(vscodeExtensionContext.data).to.eql(
+        {
+          id: 'softwaredotcom.swdc-vscode',
+          publisher: 'softwaredotcom',
+          name: 'swdc-vscode',
+          display_name: 'Code Time',
+          author: 'Software.com',
+          version: '2.6.44',
+          description: 'Code Time is an open source plugin that provides programming metrics right in Visual Studio Code.',
+          categories: [ 'Other' ],
+          extension_kind: [ 'ui', 'workspace' ]
+        }
+      );
+    })
+
+    it("has the auth context", async function() {
+      await swdcTracker.trackVSCodeExtension(eventData);
+      const contexts = swdcTracker.getLastProcessedTestEvent().contexts;
+      const auth: any = contexts.find((n: any) => n.schema.includes('auth'));
+
+      expect(auth.data).to.eql({ "jwt": "JWT 123" });
     })
   });
 });

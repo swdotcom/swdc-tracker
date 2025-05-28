@@ -54,8 +54,8 @@ export async function buildContexts(params: any) {
   }
 
   // vscode extension event
-  if (VSCodeExtension.hasData(params)) {
-    const _vscodeExtension = await new VSCodeExtension(params).buildPayload();
+  if (params.vscode_extension && VSCodeExtension.hasData(params.vscode_extension)) {
+    const _vscodeExtension = await new VSCodeExtension(params.vscode_extension).buildPayload();
     contexts.push(_vscodeExtension);
   }
 
