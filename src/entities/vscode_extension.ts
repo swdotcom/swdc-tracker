@@ -12,14 +12,14 @@ export interface VSCodeExtensionInterface {
 }
 
 export class VSCodeExtension implements VSCodeExtensionInterface {
-  public id: string; // "The canonical extension identifier in the form of: `publisher.name`" - (max len: 510)
-  public publisher: string; // (max len: 255)
-  public name: string; // (max len: 255)
-  public display_name: string; // (max len: 255)
-  public author: string; // (max len: 255)
+  public id: string; // "The canonical extension identifier in the form of: `publisher.name`" - (max len: 1024)
+  public publisher: string; // (max len: 512)
+  public name: string; // (max len: 512)
+  public display_name: string; // (max len: 2048)
+  public author: string; // (max len: 512)
   public version: string; // (max len: 255)
   public description: string; // (max len: 2048)
-  public categories: string[]; // (max len: 510)
+  public categories: string[]; // (max len per category string: 510)
   public extension_kind: string[]; // In a remote window the extension kind describes if an extension runs where the UI (window) runs or if an extension runs remotely. (max len: 255)
 
   constructor(data: VSCodeExtensionInterface) {
@@ -41,7 +41,7 @@ export class VSCodeExtension implements VSCodeExtensionInterface {
 
   async buildPayload() {
     return {
-      schema: 'iglu:com.software/vscode_extension/jsonschema/1-0-0',
+      schema: 'iglu:com.software/vscode_extension/jsonschema/1-0-1',
       data: {
         id: this.id,
         publisher: this.publisher,
