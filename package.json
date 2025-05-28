@@ -16,20 +16,20 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
-    "@types/mocha": "^7.0.2",
+    "@types/mocha": "^10.0.10",
     "chai": "^4.2.0",
-    "mocha": "^8.0.1",
-    "sinon": "^9.0.2",
+    "mocha": "^11.5.0",
+    "sinon": "^20.0.0",
     "sinon-chai": "^3.5.0",
     "ts-node": "^10.9.2",
-    "typescript": "^4.5.5"
+    "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@snowplow/node-tracker": "^3.8.0",
-    "@types/node": "^17.0.21",
-    "axios": "^1.7.2",
-    "libsodium": "^0.7.9",
-    "libsodium-wrappers": "^0.7.9",
+    "@snowplow/node-tracker": "^4.6.2",
+    "@types/node": "^22.15.23",
+    "axios": "^1.9.0",
+    "libsodium": "^0.7.15",
+    "libsodium-wrappers": "^0.7.15",
     "object-hash": "^3.0.0"
   }
 }
