@@ -6,7 +6,7 @@ import { success, error, TrackerResponse } from "./utils/response";
 import { isTestMode } from "./utils/env_helper";
 import { UIInteractionParams, UIInteraction } from "./events/ui_interaction";
 import { buildContexts } from "./utils/context_helper";
-import { tracker, gotEmitter, HttpMethod, buildSelfDescribingEvent } from '@snowplow/node-tracker';
+import { newTracker, buildSelfDescribingEvent } from '@snowplow/node-tracker';
 import { VSCodeExtensionEvent, VSCodeExtensionEventParams } from './events/vscode_extension_event';
 
 const hash = require("object-hash");
@@ -25,16 +25,23 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
     const result = await get("/plugins/config");
     const tracker_api_host = result.data.tracker_api;
     const tracker_url_scheme = result.data.tracker_url_scheme || "https";
-    // initialize snowplow tracker
-    // endpoint, protocol, port, method, buffer, retry number (max of 2)
-    const completionHandler = function(error?: any, response?: any) {
-      if (error) {
-        console.error("swdc-tracker unstruct track event error", error);
-      }
-    }
-    const e = gotEmitter(tracker_api_host, tracker_url_scheme, 443, HttpMethod.POST, 0, 2, undefined, completionHandler);
 
-    swdcTracker.spTracker = tracker([e], namespace, appId, false)
+    swdcTracker.spTracker = newTracker({
+      namespace: namespace,
+      appId: appId,
+      encodeBase64: false
+    }, {
+      endpoint: tracker_api_host,
+      protocol: tracker_url_scheme,
+      eventMethod: "post",
+      bufferSize: 1,
+      keepalive: true,
+      onRequestFailure({ events, status, message, willRetry }, response) {
+        console.error(
+          `swdc-tracker failed to send event - status: ${status}; message: ${message}; willRetry: ${willRetry}`
+        );
+      }
+    });
     swdcTracker.spTracker.setPlatform('iot');
     swdcTracker.spTracker.setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
