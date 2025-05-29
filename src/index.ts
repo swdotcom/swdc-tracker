@@ -22,7 +22,7 @@ swdcTracker.initialize = async (swdcApiHost: string, namespace: string, appId: s
   try {
     // fetch tracker_api from plugin config
     setBaseUrl(swdcApiHost);
-    const result = await get("/plugins/config");
+    const result = await get("/api/v1/plugins/config");
     const tracker_api_host = result.data.tracker_api;
     const tracker_url_scheme = result.data.tracker_url_scheme || "https";
 

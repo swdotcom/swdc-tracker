@@ -78,11 +78,13 @@ async function encryptValue(value: string, hashedValue: string, dataType: string
     data_type: dataType
   }
 
-  await post("/user_encrypted_data", params, jwt);
+  await post("/api/v1/user/encrypted_data", params, jwt);
 }
 
 export async function setUserHashedValues(jwt: string) {
-  const response = await get("/hashed_values", jwt);
+  const response = await get("/api/v1/user/hashed_values", jwt);
   const hashed_values = response.data;
-  await storeHashedValues(hashed_values);
+  if (hashed_values) {
+    await storeHashedValues(hashed_values);
+  }
 }
