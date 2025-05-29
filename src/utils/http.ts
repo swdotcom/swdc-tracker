@@ -26,7 +26,7 @@ export async function get(endpoint: string, jwt?: string) {
     // UnhandledPromiseRejectionWarning: Error: connect ECONNREFUSED 127.0.0.1:80
     // at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1141:16)
     const msg = e.message || e.status;
-    console.log("swdc-tracker get request error", msg);
+    console.log(`swdc-tracker get request error - ${endpoint} -`, msg);
     return e;
   });
   return result;
@@ -36,7 +36,7 @@ export async function post(endpoint: string, body: any, jwt: string) {
   axiosClient.defaults.headers.common["Authorization"] = jwt;
   const result = await axiosClient.post(endpoint, body).catch((e: any) => {
     const msg = e.message || e.code;
-    console.log("swdc-tracker post request error", msg);
+    console.log(`swdc-tracker post request error - ${endpoint} -`, msg);
     return e;
   });
   return result;
