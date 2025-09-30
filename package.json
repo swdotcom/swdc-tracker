@@ -1,6 +1,6 @@
 {
   "name": "swdc-tracker",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "swdc event tracker",
   "main": "dist",
   "types": "dist/index.d.js",
@@ -30,7 +30,7 @@
   "dependencies": {
     "@snowplow/node-tracker": "^4.6.2",
     "@types/node": "^22.15.23",
-    "axios": "^1.9.0",
+    "axios": "^1.12.2",
     "libsodium": "^0.7.15",
     "libsodium-wrappers": "^0.7.15",
     "object-hash": "^3.0.0"
